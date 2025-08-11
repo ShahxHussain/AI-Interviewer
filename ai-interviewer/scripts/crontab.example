@@ -1,0 +1,25 @@
+# AI Interviewer Data Cleanup Cron Jobs
+# 
+# Add these entries to your crontab to automate data cleanup
+# Edit with: crontab -e
+# View with: crontab -l
+
+# Run data cleanup daily at 2:00 AM
+0 2 * * * cd /path/to/ai-interviewer && node scripts/cleanup-data.js >> logs/cleanup.log 2>&1
+
+# Run data cleanup weekly on Sundays at 3:00 AM (more thorough cleanup)
+0 3 * * 0 cd /path/to/ai-interviewer && node scripts/cleanup-data.js --policy-file scripts/weekly-policy.json >> logs/weekly-cleanup.log 2>&1
+
+# Run dry-run cleanup every hour during business hours for monitoring
+0 9-17 * * 1-5 cd /path/to/ai-interviewer && node scripts/cleanup-data.js --dry-run >> logs/dry-run.log 2>&1
+
+# Alternative: Using npm scripts
+# 0 2 * * * cd /path/to/ai-interviewer && npm run cleanup >> logs/cleanup.log 2>&1
+
+# Notes:
+# - Replace /path/to/ai-interviewer with the actual path to your project
+# - Ensure the logs directory exists: mkdir -p logs
+# - Make sure Node.js is in the PATH for the cron user
+# - Consider using absolute paths for node and npm commands
+# - Test the commands manually before adding to cron
+# - Monitor the log files for errors and successful runs

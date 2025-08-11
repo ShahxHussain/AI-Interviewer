@@ -6,6 +6,7 @@ import { InterviewSelection } from '@/components/interview/InterviewSelection';
 import { CustomizationPanel } from '@/components/interview/CustomizationPanel';
 import { InterviewSession } from '@/components/interview/InterviewSession';
 import { InterviewComplete } from '@/components/interview/InterviewComplete';
+import { ComprehensiveFeedbackComponent } from '@/components/interview/ComprehensiveFeedback';
 import {
   InterviewerType,
   InterviewType,
@@ -249,7 +250,7 @@ export default function InterviewPage() {
           return null;
         }
         return (
-          <InterviewComplete
+          <ComprehensiveFeedbackComponent
             session={completedSession}
             onRetakeInterview={handleRetakeInterview}
             onBackToHome={handleBackToHome}

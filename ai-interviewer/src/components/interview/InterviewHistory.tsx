@@ -175,211 +175,264 @@ export function InterviewHistory({
   const stats = getOverallStats();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between luxury-fade-in">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2 className="text-3xl font-bold luxury-text-gold font-luxury">
             Interview History
           </h2>
-          <p className="text-gray-600">
+          <p className="luxury-text-secondary text-lg mt-2">
             Track your progress and review past interviews
           </p>
         </div>
         {onStartNewInterview && (
-          <Button onClick={onStartNewInterview}>Start New Interview</Button>
+          <button 
+            onClick={onStartNewInterview}
+            className="luxury-button-primary flex items-center gap-2"
+          >
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+            Start New Interview
+          </button>
         )}
       </div>
 
       {/* Overall Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center">
-              <BarChart3 className="h-8 w-8 text-blue-600" />
-              <div className="ml-4">
-                <p className="text-2xl font-bold">{stats.totalSessions}</p>
-                <p className="text-sm text-gray-600">Total Interviews</p>
-              </div>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 luxury-slide-up">
+        <div className="luxury-card p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium luxury-text-secondary">Total Sessions</p>
+              <p className="text-3xl font-bold luxury-text-primary">{stats.totalSessions}</p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="p-3 bg-gradient-to-br from-sapphire-400 to-sapphire-600 rounded-full">
+              <BarChart3 className="w-6 h-6 text-white" />
+            </div>
+          </div>
+          <div className="mt-4">
+            <p className="text-sm luxury-text-secondary">
+              {stats.completedSessions} completed
+            </p>
+          </div>
+        </div>
 
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center">
-              <CheckCircle className="h-8 w-8 text-green-600" />
-              <div className="ml-4">
-                <p className="text-2xl font-bold">{stats.completedSessions}</p>
-                <p className="text-sm text-gray-600">Completed</p>
-              </div>
+        <div className="luxury-card p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium luxury-text-secondary">Completion Rate</p>
+              <p className="text-3xl font-bold luxury-text-primary">
+                {stats.totalSessions > 0 
+                  ? Math.round((stats.completedSessions / stats.totalSessions) * 100)
+                  : 0}%
+              </p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="p-3 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full">
+              <CheckCircle className="w-6 h-6 text-white" />
+            </div>
+          </div>
+          <div className="mt-4">
+            <p className="text-sm luxury-text-secondary">
+              {stats.completedSessions} of {stats.totalSessions} sessions
+            </p>
+          </div>
+        </div>
 
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center">
-              <TrendingUp className="h-8 w-8 text-purple-600" />
-              <div className="ml-4">
-                <p className="text-2xl font-bold">
-                  {stats.averageScore.toFixed(1)}
-                </p>
-                <p className="text-sm text-gray-600">Avg Score</p>
-              </div>
+        <div className="luxury-card p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium luxury-text-secondary">Average Score</p>
+              <p className="text-3xl font-bold luxury-text-gold">
+                {stats.averageScore.toFixed(1)}/10
+              </p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="p-3 bg-gradient-to-br from-amethyst-400 to-amethyst-600 rounded-full">
+              <TrendingUp className="w-6 h-6 text-white" />
+            </div>
+          </div>
+          <div className="mt-4">
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 bg-gold-400 rounded-full animate-pulse" />
+              <span className="text-sm luxury-text-secondary">Performance trend</span>
+            </div>
+          </div>
+        </div>
 
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center">
-              <Clock className="h-8 w-8 text-orange-600" />
-              <div className="ml-4">
-                <p className="text-2xl font-bold">{stats.totalTimeMinutes}m</p>
-                <p className="text-sm text-gray-600">Total Time</p>
-              </div>
+        <div className="luxury-card p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium luxury-text-secondary">Total Time</p>
+              <p className="text-3xl font-bold luxury-text-primary">{stats.totalTimeMinutes}m</p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="p-3 bg-gradient-to-br from-gold-400 to-gold-600 rounded-full">
+              <Clock className="w-6 h-6 text-dark-900" />
+            </div>
+          </div>
+          <div className="mt-4">
+            <p className="text-sm luxury-text-secondary">
+              Practice sessions
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Sessions List */}
       {sessions.length === 0 ? (
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center py-12">
-              <MessageSquare className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                No interviews yet
-              </h3>
-              <p className="text-gray-600 mb-6">
-                Start your first interview to begin tracking your progress
-              </p>
-              {onStartNewInterview && (
-                <Button onClick={onStartNewInterview}>
-                  Start Your First Interview
-                </Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        <div className="luxury-card p-12 text-center">
+          <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-gold-400/20 to-gold-600/20 rounded-full flex items-center justify-center">
+            <MessageSquare className="w-10 h-10 text-gold-400" />
+          </div>
+          <h3 className="text-2xl font-bold luxury-text-primary mb-3">
+            No interviews yet
+          </h3>
+          <p className="luxury-text-secondary text-lg mb-8 max-w-md mx-auto">
+            Start your first interview to begin tracking your progress and unlock powerful analytics
+          </p>
+          {onStartNewInterview && (
+            <button 
+              onClick={onStartNewInterview}
+              className="luxury-button-primary"
+            >
+              Start Your First Interview
+            </button>
+          )}
+        </div>
       ) : (
-        <div className="space-y-4">
-          {sessions.map(session => (
-            <Card key={session.id}>
-              <CardContent className="pt-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      {getStatusIcon(session.status)}
-                      <Badge className={getStatusColor(session.status)}>
-                        {session.status.replace('-', ' ')}
-                      </Badge>
-                      <Badge variant="secondary" className="capitalize">
-                        {session.configuration.interviewer.replace('-', ' ')}
-                      </Badge>
-                      <Badge variant="secondary" className="capitalize">
-                        {session.configuration.type}
-                      </Badge>
+        <div className="space-y-6">
+          {sessions.map((session, index) => (
+            <div 
+              key={session.id} 
+              className="luxury-card p-6 hover:transform hover:scale-[1.02] transition-all duration-300"
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-4">
+                    {getStatusIcon(session.status)}
+                    <div className={`luxury-badge ${getStatusColor(session.status).includes('green') ? 'luxury-badge-success' : getStatusColor(session.status).includes('blue') ? 'luxury-badge-info' : 'luxury-badge-error'}`}>
+                      {session.status.replace('-', ' ')}
                     </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-gray-500" />
-                        <span>{session.startedAt.toLocaleDateString()}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-gray-500" />
-                        <span>
-                          {formatDuration(
-                            session.startedAt,
-                            session.completedAt
-                          )}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <MessageSquare className="h-4 w-4 text-gray-500" />
-                        <span>
-                          {session.responses.length}/{session.questions.length}{' '}
-                          questions
-                        </span>
-                      </div>
-                      {session.status === 'completed' && (
-                        <div className="flex items-center gap-2">
-                          <TrendingUp className="h-4 w-4 text-gray-500" />
-                          <span>
-                            Score: {session.feedback.overallScore.toFixed(1)}/10
-                          </span>
-                        </div>
-                      )}
+                    <div className="luxury-badge">
+                      {session.configuration.interviewer.replace('-', ' ')}
                     </div>
+                    <div className="luxury-badge">
+                      {session.configuration.type}
+                    </div>
+                  </div>
 
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-sapphire-500/20 rounded-lg">
+                        <Calendar className="w-4 h-4 text-sapphire-400" />
+                      </div>
+                      <div>
+                        <p className="text-xs luxury-text-secondary">Date</p>
+                        <p className="text-sm font-medium luxury-text-primary">
+                          {session.startedAt.toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-emerald-500/20 rounded-lg">
+                        <Clock className="w-4 h-4 text-emerald-400" />
+                      </div>
+                      <div>
+                        <p className="text-xs luxury-text-secondary">Duration</p>
+                        <p className="text-sm font-medium luxury-text-primary">
+                          {formatDuration(session.startedAt, session.completedAt)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-amethyst-500/20 rounded-lg">
+                        <MessageSquare className="w-4 h-4 text-amethyst-400" />
+                      </div>
+                      <div>
+                        <p className="text-xs luxury-text-secondary">Progress</p>
+                        <p className="text-sm font-medium luxury-text-primary">
+                          {session.responses.length}/{session.questions.length} questions
+                        </p>
+                      </div>
+                    </div>
                     {session.status === 'completed' && (
-                      <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-600">Eye Contact:</span>
-                          <span className="font-medium">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-gold-500/20 rounded-lg">
+                          <TrendingUp className="w-4 h-4 text-gold-400" />
+                        </div>
+                        <div>
+                          <p className="text-xs luxury-text-secondary">Score</p>
+                          <p className="text-sm font-bold luxury-text-gold">
+                            {session.feedback.overallScore.toFixed(1)}/10
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {session.status === 'completed' && (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-gold-400/10">
+                      <div className="text-center">
+                        <div className="flex items-center justify-center gap-2 mb-1">
+                          <Eye className="w-4 h-4 text-emerald-400" />
+                          <span className="text-lg font-bold luxury-text-primary">
                             {session.metrics.eyeContactPercentage}%
                           </span>
                         </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-600">Confidence:</span>
-                          <span className="font-medium">
-                            {Math.round(
-                              session.metrics.averageConfidence * 100
-                            )}
-                            %
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-600">Engagement:</span>
-                          <span className="font-medium">
-                            {Math.round(
-                              session.metrics.overallEngagement * 100
-                            )}
-                            %
-                          </span>
-                        </div>
+                        <p className="text-xs luxury-text-secondary">Eye Contact</p>
                       </div>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-2 ml-4">
-                    {session.status === 'in-progress' && onResumeSession && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onResumeSession(session.id)}
-                      >
-                        <Play className="h-4 w-4 mr-1" />
-                        Resume
-                      </Button>
-                    )}
-
-                    {session.status === 'completed' && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDownloadReport(session)}
-                      >
-                        <Download className="h-4 w-4 mr-1" />
-                        Report
-                      </Button>
-                    )}
-
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDeleteSession(session.id)}
-                      className="text-red-600 hover:text-red-700"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                      <div className="text-center">
+                        <div className="flex items-center justify-center gap-2 mb-1">
+                          <TrendingUp className="w-4 h-4 text-sapphire-400" />
+                          <span className="text-lg font-bold luxury-text-primary">
+                            {Math.round(session.metrics.averageConfidence * 100)}%
+                          </span>
+                        </div>
+                        <p className="text-xs luxury-text-secondary">Confidence</p>
+                      </div>
+                      <div className="text-center">
+                        <div className="flex items-center justify-center gap-2 mb-1">
+                          <BarChart3 className="w-4 h-4 text-amethyst-400" />
+                          <span className="text-lg font-bold luxury-text-primary">
+                            {Math.round(session.metrics.overallEngagement * 100)}%
+                          </span>
+                        </div>
+                        <p className="text-xs luxury-text-secondary">Engagement</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </CardContent>
-            </Card>
+
+                <div className="flex items-center gap-3 ml-6">
+                  {session.status === 'in-progress' && onResumeSession && (
+                    <button
+                      onClick={() => onResumeSession(session.id)}
+                      className="luxury-button-secondary flex items-center gap-2 px-4 py-2"
+                    >
+                      <Play className="w-4 h-4" />
+                      Resume
+                    </button>
+                  )}
+
+                  {session.status === 'completed' && (
+                    <button
+                      onClick={() => handleDownloadReport(session)}
+                      className="luxury-button-secondary flex items-center gap-2 px-4 py-2"
+                    >
+                      <Download className="w-4 h-4" />
+                      Report
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => handleDeleteSession(session.id)}
+                    className="p-2 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500/10 hover:border-red-500/50 transition-all duration-300"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       )}

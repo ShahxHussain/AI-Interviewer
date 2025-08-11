@@ -1,0 +1,26 @@
+{
+  "enabled": true,
+  "name": "Data Validation & Security Hook",
+  "description": "Monitors changes to session management, user profiles, and interview data storage components. Automatically validates data schemas, tests CRUD operations, verifies authentication flows, and ensures secure handling of sensitive candidate information with privacy compliance checks.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "ai-interviewer/src/lib/auth.ts",
+      "ai-interviewer/src/lib/user-service.ts",
+      "ai-interviewer/src/lib/models/**",
+      "ai-interviewer/src/lib/mongodb.ts",
+      "ai-interviewer/src/lib/middleware.ts",
+      "ai-interviewer/src/app/api/auth/**",
+      "ai-interviewer/src/app/api/interviews/**",
+      "ai-interviewer/src/app/api/users/**",
+      "ai-interviewer/src/components/auth/**",
+      "ai-interviewer/src/hooks/**",
+      "ai-interviewer/src/types/**"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Files related to session management, user profiles, or interview data storage have been modified. Please perform the following validation tasks:\n\n1. **Schema Validation**: Verify that all database models and TypeScript interfaces are consistent and properly typed\n2. **CRUD Operations Testing**: Test create, read, update, and delete operations for affected data models\n3. **Authentication Flow Verification**: Ensure JWT token handling, user verification, and session management work correctly\n4. **Data Persistence Check**: Verify that interview session data is properly stored and retrievable from MongoDB\n5. **Privacy Compliance**: Review code for proper handling of sensitive candidate information (PII, interview responses, resume data)\n6. **Security Validation**: Check for proper input sanitization, authorization checks, and secure data transmission\n7. **API Endpoint Testing**: Test affected API routes for proper error handling and response formats\n\nFocus on data integrity, security vulnerabilities, and compliance with privacy requirements for candidate information."
+  }
+}

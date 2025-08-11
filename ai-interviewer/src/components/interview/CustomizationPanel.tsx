@@ -146,22 +146,20 @@ export function CustomizationPanel({
             return (
               <React.Fragment key={step.key}>
                 <div
-                  className={`flex items-center space-x-2 ${
-                    isActive
-                      ? 'text-blue-600'
-                      : isCompleted
-                        ? 'text-green-600'
-                        : 'text-gray-400'
-                  }`}
+                  className={`flex items-center space-x-2 ${isActive
+                    ? 'text-blue-600'
+                    : isCompleted
+                      ? 'text-green-600'
+                      : 'text-gray-400'
+                    }`}
                 >
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                      isActive
-                        ? 'bg-blue-100 text-blue-600'
-                        : isCompleted
-                          ? 'bg-green-100 text-green-600'
-                          : 'bg-gray-100 text-gray-400'
-                    }`}
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${isActive
+                      ? 'bg-blue-100 text-blue-600'
+                      : isCompleted
+                        ? 'bg-green-100 text-green-600'
+                        : 'bg-gray-100 text-gray-400'
+                      }`}
                   >
                     {isCompleted ? (
                       <CheckCircle className="h-5 w-5" />

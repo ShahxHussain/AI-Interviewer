@@ -1,4 +1,5 @@
 import { InterviewSession, InterviewResponse } from '@/types';
+import { MetricsStorageService } from './metrics-storage-service';
 
 export interface SessionStorage {
   saveSession: (session: InterviewSession) => Promise<void>;
@@ -9,6 +10,27 @@ export interface SessionStorage {
   ) => Promise<void>;
   deleteSession: (sessionId: string) => Promise<void>;
   getUserSessions: (userId: string) => Promise<InterviewSession[]>;
+}
+
+export interface SessionFilters {
+  status?: 'in-progress' | 'completed' | 'abandoned';
+  interviewType?: 'technical' | 'behavioral' | 'case-study';
+  interviewer?: 'tech-lead' | 'hr-manager' | 'product-manager' | 'recruiter';
+  difficulty?: 'beginner' | 'moderate' | 'advanced';
+  dateFrom?: Date;
+  dateTo?: Date;
+  searchQuery?: string;
+}
+
+export interface SessionAnalytics {
+  totalSessions: number;
+  completedSessions: number;
+  averageScore: number;
+  improvementTrend: number;
+  topStrengths: string[];
+  topWeaknesses: string[];
+  performanceByType: Record<string, number>;
+  performanceByDifficulty: Record<string, number>;
 }
 
 export class SessionService {
@@ -148,6 +170,14 @@ export class SessionService {
 
       const updatedMetrics = { ...session.metrics, ...metrics };
       await this.updateSession(sessionId, { metrics: updatedMetrics });
+
+      // Also store in metrics storage service
+      try {
+        await MetricsStorageService.storeMetrics(sessionId, updatedMetrics);
+      } catch (metricsError) {
+        console.warn('Failed to store metrics in metrics service:', metricsError);
+        // Don't fail the session update if metrics storage fails
+      }
     } catch (error) {
       console.error('Failed to update metrics:', error);
       throw new Error('Failed to update session metrics');
@@ -351,5 +381,255 @@ export class SessionService {
     });
 
     return report;
+  }
+
+  /**
+   * Get filtered sessions for a user with pagination
+   */
+  static async getFilteredUserSessions(
+    userId: string,
+    filters: SessionFilters = {},
+    page: number = 1,
+    limit: number = 10
+  ): Promise<{ sessions: InterviewSession[]; total: number; hasMore: boolean }> {
+    try {
+      // Use localStorage for client-side filtering
+      let allSessions = this.getAllSessions().filter(s => s.candidateId === userId);
+      
+      // Apply filters
+      if (filters.status) {
+        allSessions = allSessions.filter(s => s.status === filters.status);
+      }
+      
+      if (filters.interviewType) {
+        allSessions = allSessions.filter(s => s.configuration.type === filters.interviewType);
+      }
+      
+      if (filters.interviewer) {
+        allSessions = allSessions.filter(s => s.configuration.interviewer === filters.interviewer);
+      }
+      
+      if (filters.difficulty) {
+        allSessions = allSessions.filter(s => s.configuration.settings.difficulty === filters.difficulty);
+      }
+      
+      if (filters.dateFrom || filters.dateTo) {
+        allSessions = allSessions.filter(s => {
+          const sessionDate = new Date(s.startedAt);
+          if (filters.dateFrom && sessionDate < filters.dateFrom) return false;
+          if (filters.dateTo && sessionDate > filters.dateTo) return false;
+          return true;
+        });
+      }
+      
+      if (filters.searchQuery) {
+        const query = filters.searchQuery.toLowerCase();
+        allSessions = allSessions.filter(s => 
+          s.configuration.interviewer.toLowerCase().includes(query) ||
+          s.configuration.type.toLowerCase().includes(query) ||
+          s.feedback.strengths.some(strength => strength.toLowerCase().includes(query)) ||
+          s.feedback.weaknesses.some(weakness => weakness.toLowerCase().includes(query))
+        );
+      }
+
+      // Sort by date (newest first)
+      allSessions.sort((a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime());
+
+      const skip = (page - 1) * limit;
+      const paginatedSessions = allSessions.slice(skip, skip + limit);
+
+      return {
+        sessions: paginatedSessions,
+        total: allSessions.length,
+        hasMore: skip + paginatedSessions.length < allSessions.length,
+      };
+    } catch (error) {
+      console.error('Failed to get filtered sessions:', error);
+      return {
+        sessions: [],
+        total: 0,
+        hasMore: false,
+      };
+    }
+  }
+
+  /**
+   * Generate user analytics across all sessions
+   */
+  static async generateUserAnalytics(userId: string): Promise<SessionAnalytics> {
+    try {
+      // Use localStorage for development
+      const sessions = this.getAllSessions().filter(s => s.candidateId === userId);
+      const completedSessions = sessions.filter(s => s.status === 'completed');
+      
+      if (completedSessions.length === 0) {
+        return {
+          totalSessions: sessions.length,
+          completedSessions: 0,
+          averageScore: 0,
+          improvementTrend: 0,
+          topStrengths: [],
+          topWeaknesses: [],
+          performanceByType: {},
+          performanceByDifficulty: {},
+        };
+      }
+
+      // Calculate average score
+      const averageScore = completedSessions.reduce(
+        (sum, session) => sum + session.feedback.overallScore, 0
+      ) / completedSessions.length;
+
+      // Calculate improvement trend (last 5 vs previous 5)
+      const sortedSessions = completedSessions.sort(
+        (a, b) => new Date(a.startedAt).getTime() - new Date(b.startedAt).getTime()
+      );
+      
+      let improvementTrend = 0;
+      if (sortedSessions.length >= 2) {
+        const recentSessions = sortedSessions.slice(-5);
+        const olderSessions = sortedSessions.slice(-10, -5);
+        
+        if (olderSessions.length > 0) {
+          const recentAvg = recentSessions.reduce(
+            (sum, s) => sum + s.feedback.overallScore, 0
+          ) / recentSessions.length;
+          
+          const olderAvg = olderSessions.reduce(
+            (sum, s) => sum + s.feedback.overallScore, 0
+          ) / olderSessions.length;
+          
+          improvementTrend = ((recentAvg - olderAvg) / olderAvg) * 100;
+        }
+      }
+
+      // Aggregate strengths and weaknesses
+      const strengthsMap = new Map<string, number>();
+      const weaknessesMap = new Map<string, number>();
+      
+      completedSessions.forEach(session => {
+        session.feedback.strengths.forEach(strength => {
+          strengthsMap.set(strength, (strengthsMap.get(strength) || 0) + 1);
+        });
+        session.feedback.weaknesses.forEach(weakness => {
+          weaknessesMap.set(weakness, (weaknessesMap.get(weakness) || 0) + 1);
+        });
+      });
+
+      const topStrengths = Array.from(strengthsMap.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(([strength]) => strength);
+
+      const topWeaknesses = Array.from(weaknessesMap.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(([weakness]) => weakness);
+
+      // Performance by type and difficulty
+      const performanceByType: Record<string, number> = {};
+      const performanceByDifficulty: Record<string, number> = {};
+      
+      const typeGroups = new Map<string, number[]>();
+      const difficultyGroups = new Map<string, number[]>();
+      
+      completedSessions.forEach(session => {
+        const type = session.configuration.type;
+        const difficulty = session.configuration.settings.difficulty;
+        const score = session.feedback.overallScore;
+        
+        if (!typeGroups.has(type)) typeGroups.set(type, []);
+        if (!difficultyGroups.has(difficulty)) difficultyGroups.set(difficulty, []);
+        
+        typeGroups.get(type)!.push(score);
+        difficultyGroups.get(difficulty)!.push(score);
+      });
+      
+      typeGroups.forEach((scores, type) => {
+        performanceByType[type] = scores.reduce((sum, score) => sum + score, 0) / scores.length;
+      });
+      
+      difficultyGroups.forEach((scores, difficulty) => {
+        performanceByDifficulty[difficulty] = scores.reduce((sum, score) => sum + score, 0) / scores.length;
+      });
+
+      return {
+        totalSessions: sessions.length,
+        completedSessions: completedSessions.length,
+        averageScore,
+        improvementTrend,
+        topStrengths,
+        topWeaknesses,
+        performanceByType,
+        performanceByDifficulty,
+      };
+    } catch (error) {
+      console.error('Failed to generate user analytics:', error);
+      return {
+        totalSessions: 0,
+        completedSessions: 0,
+        averageScore: 0,
+        improvementTrend: 0,
+        topStrengths: [],
+        topWeaknesses: [],
+        performanceByType: {},
+        performanceByDifficulty: {},
+      };
+    }
+  }
+
+  /**
+   * Get session replay data
+   */
+  static async getSessionReplay(sessionId: string): Promise<InterviewSession | null> {
+    try {
+      // Use localStorage for development - in production this would use the database
+      return this.getSession(sessionId);
+    } catch (error) {
+      console.error('Failed to get session replay:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Export multiple sessions as CSV
+   */
+  static exportSessionsAsCSV(sessions: InterviewSession[]): string {
+    const headers = [
+      'Session ID',
+      'Date',
+      'Status',
+      'Interviewer',
+      'Type',
+      'Difficulty',
+      'Overall Score',
+      'Completion Rate',
+      'Eye Contact %',
+      'Avg Confidence',
+      'Response Quality',
+      'Engagement',
+      'Duration (min)',
+    ];
+
+    const rows = sessions.map(session => {
+      const analytics = this.generateSessionAnalytics(session);
+      return [
+        session.id,
+        new Date(session.startedAt).toLocaleDateString(),
+        session.status,
+        session.configuration.interviewer,
+        session.configuration.type,
+        session.configuration.settings.difficulty,
+        session.feedback.overallScore,
+        analytics.completionRate.toFixed(1),
+        session.metrics.eyeContactPercentage,
+        (analytics.averageConfidence * 100).toFixed(1),
+        (session.metrics.responseQuality * 100).toFixed(1),
+        (session.metrics.overallEngagement * 100).toFixed(1),
+        Math.floor(analytics.sessionDuration / 60),
+      ];
+    });
+
+    return [headers, ...rows].map(row => row.join(',')).join('\n');
   }
 }

@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import {
   Play,
   Pause,
@@ -26,6 +27,10 @@ import {
   AlertCircle,
   ArrowLeft,
   ArrowRight,
+  Activity,
+  Eye,
+  BarChart3,
+  Settings,
 } from 'lucide-react';
 import {
   InterviewConfiguration,
@@ -34,10 +39,12 @@ import {
   InterviewSession as IInterviewSession,
 } from '@/types';
 import { useQuestionGeneration } from '@/hooks/useQuestionGeneration';
-import { useVoiceSynthesis } from '@/hooks/useVoiceSynthesis';
+import { useInterviewSession } from '@/hooks/useInterviewSession';
+import { useMetricsCollection } from '@/hooks/useMetricsCollection';
 import { VoicePlayer } from './VoicePlayer';
 import { AudioRecorder } from './AudioRecorder';
 import { CameraFeed } from './CameraFeed';
+import { RealTimeMetricsDashboard } from './RealTimeMetricsDashboard';
 
 interface InterviewSessionProps {
   config: InterviewConfiguration;
@@ -68,6 +75,8 @@ export function InterviewSession({
   const [isSpeakerOn, setIsSpeakerOn] = useState(true);
   const [currentResponse, setCurrentResponse] = useState('');
   const [sessionId, setSessionId] = useState<string>('');
+  const [showMetrics, setShowMetrics] = useState(false);
+  const [pausedTime, setPausedTime] = useState(0);
 
   const {
     questions,
@@ -75,6 +84,45 @@ export function InterviewSession({
     error: questionsError,
     generateQuestions,
   } = useQuestionGeneration();
+
+  // Interview session management
+  const {
+    session,
+    createSession,
+    addResponse,
+    updateMetrics,
+    completeSession: completeInterviewSession,
+    pauseSession: pauseInterviewSession,
+    resumeSession: resumeInterviewSession,
+  } = useInterviewSession();
+
+  // Metrics collection
+  const {
+    isCollecting: isMetricsCollecting,
+    startCollection: startMetricsCollection,
+    stopCollection: stopMetricsCollection,
+    addFacialData,
+    startResponse,
+    endResponse,
+    getRealTimeMetrics,
+  } = useMetricsCollection({
+    sessionId,
+    onMetricsUpdate: (metrics) => {
+      // Only update session metrics if there's an active session
+      if (session && sessionState === 'in-progress') {
+        try {
+          updateMetrics({
+            eyeContactPercentage: metrics.eyeContactPercentage,
+            averageConfidence: metrics.averageConfidence,
+            responseQuality: metrics.responseQuality,
+            overallEngagement: metrics.engagementScore / 100,
+          });
+        } catch (error) {
+          console.warn('Failed to update metrics:', error);
+        }
+      }
+    },
+  });
 
   // Generate questions when component mounts
   useEffect(() => {
@@ -93,24 +141,73 @@ export function InterviewSession({
     }
   }, [questions, sessionState]);
 
-  const startSession = useCallback(() => {
-    const now = new Date();
-    setSessionStartTime(now);
-    setQuestionStartTime(now);
-    setSessionState('in-progress');
-    setSessionId(
-      `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-    );
-  }, []);
+  const startSession = useCallback(async () => {
+    try {
+      const now = new Date();
+      setSessionStartTime(now);
+      setQuestionStartTime(now);
+      setSessionState('in-progress');
+      
+      const newSessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      setSessionId(newSessionId);
+      
+      // Create session in the database
+      await createSession(config);
+      
+      // Start metrics collection
+      startMetricsCollection(newSessionId);
+      
+      console.log('Interview session started:', newSessionId);
+    } catch (error) {
+      console.error('Failed to start session:', error);
+      // Continue with local session even if database fails
+    }
+  }, [config, createSession, startMetricsCollection]);
 
-  const pauseSession = useCallback(() => {
-    setSessionState('paused');
-    setIsRecording(false);
-  }, []);
+  const pauseSession = useCallback(async () => {
+    try {
+      const pauseStartTime = Date.now();
+      setSessionState('paused');
+      setIsRecording(false);
+      
+      // Pause interview session
+      if (session) {
+        await pauseInterviewSession();
+      }
+      
+      // Stop response recording if active
+      if (isRecording) {
+        endResponse();
+      }
+      
+      console.log('Interview session paused');
+    } catch (error) {
+      console.error('Failed to pause session:', error);
+      // Continue with local pause even if database fails
+      setSessionState('paused');
+      setIsRecording(false);
+    }
+  }, [session, pauseInterviewSession, isRecording, endResponse]);
 
-  const resumeSession = useCallback(() => {
-    setSessionState('in-progress');
-  }, []);
+  const resumeSession = useCallback(async () => {
+    try {
+      setSessionState('in-progress');
+      
+      // Resume interview session
+      if (session) {
+        await resumeInterviewSession();
+      }
+      
+      // Reset question start time to account for pause
+      setQuestionStartTime(new Date());
+      
+      console.log('Interview session resumed');
+    } catch (error) {
+      console.error('Failed to resume session:', error);
+      // Continue with local resume even if database fails
+      setSessionState('in-progress');
+    }
+  }, [session, resumeInterviewSession]);
 
   const nextQuestion = useCallback(() => {
     // Save current response
@@ -156,53 +253,165 @@ export function InterviewSession({
     }
   }, [currentQuestionIndex]);
 
-  const completeSession = useCallback(() => {
+  const completeSession = useCallback(async () => {
     if (!sessionStartTime) return;
 
-    const session: IInterviewSession = {
-      id: sessionId,
-      candidateId: 'current-user', // This should come from auth context
-      configuration: config,
-      questions,
-      responses,
-      metrics: {
-        eyeContactPercentage: 75,
-        moodTimeline: [],
-        averageConfidence: 0.8,
-        responseQuality: 0.85,
-        overallEngagement: 0.9,
-      },
-      feedback: {
-        strengths: ['Good technical knowledge', 'Clear communication'],
-        weaknesses: [
-          'Could improve confidence',
-          'More specific examples needed',
-        ],
-        suggestions: [
-          'Practice more behavioral questions',
-          'Work on eye contact',
-        ],
-        overallScore: 8.5,
-      },
-      status: 'completed',
-      startedAt: sessionStartTime,
-      completedAt: new Date(),
-    };
+    try {
+      // Stop metrics collection and get final metrics
+      const finalMetrics = stopMetricsCollection();
+      
+      // Save current response if there is one
+      if (currentResponse.trim() && questionStartTime) {
+        const response: InterviewResponse = {
+          questionId: questions[currentQuestionIndex].id,
+          transcription: currentResponse,
+          duration: Date.now() - questionStartTime.getTime(),
+          confidence: 0.8, // Mock confidence score
+          facialMetrics: {
+            emotions: {
+              happy: 0.3,
+              sad: 0.1,
+              angry: 0.05,
+              fearful: 0.1,
+              disgusted: 0.05,
+              surprised: 0.2,
+              neutral: 0.3,
+            },
+            eyeContact: true,
+            headPose: { pitch: 0, yaw: 0, roll: 0 },
+            timestamp: Date.now(),
+          },
+        };
+        
+        const updatedResponses = [...responses, response];
+        setResponses(updatedResponses);
+        
+        // Add response to session
+        if (session) {
+          await addResponse(response);
+        }
+      }
 
-    setSessionState('completed');
-    onSessionComplete(session);
+      // Generate comprehensive feedback using AI
+      const comprehensiveFeedback = await import('@/lib/services/feedback-service')
+        .then(module => module.FeedbackService.generateComprehensiveFeedback({
+          id: sessionId,
+          candidateId: 'current-user',
+          configuration: config,
+          questions,
+          responses: [...responses, ...(currentResponse.trim() ? [response] : [])],
+          metrics: finalMetrics,
+          feedback: {
+            strengths: [],
+            weaknesses: [],
+            suggestions: [],
+            overallScore: 0,
+          },
+          status: 'completed',
+          startedAt: sessionStartTime,
+          completedAt: new Date(),
+        }))
+        .catch(error => {
+          console.error('Failed to generate comprehensive feedback:', error);
+          // Fallback to basic feedback
+          return {
+            strengths: ['Completed the interview session', 'Engaged with questions'],
+            weaknesses: ['Consider more detailed responses'],
+            suggestions: ['Practice more mock interviews', 'Prepare specific examples'],
+            overallScore: 7.0,
+          };
+        });
+
+      const completedSession: IInterviewSession = {
+        id: sessionId,
+        candidateId: 'current-user', // This should come from auth context
+        configuration: config,
+        questions,
+        responses: [...responses, ...(currentResponse.trim() ? [response] : [])],
+        metrics: finalMetrics,
+        feedback: {
+          strengths: comprehensiveFeedback.strengths,
+          weaknesses: comprehensiveFeedback.weaknesses,
+          suggestions: comprehensiveFeedback.suggestions,
+          overallScore: comprehensiveFeedback.overallScore,
+        },
+        status: 'completed',
+        startedAt: sessionStartTime,
+        completedAt: new Date(),
+      };
+
+      // Complete the session in the database
+      if (session) {
+        await completeInterviewSession(completedSession.feedback);
+      }
+
+      setSessionState('completed');
+      onSessionComplete(completedSession);
+      
+      console.log('Interview session completed successfully');
+    } catch (error) {
+      console.error('Failed to complete session:', error);
+      // Still complete the session locally even if database fails
+      const completedSession: IInterviewSession = {
+        id: sessionId,
+        candidateId: 'current-user',
+        configuration: config,
+        questions,
+        responses,
+        metrics: {
+          eyeContactPercentage: 75,
+          moodTimeline: [],
+          averageConfidence: 0.8,
+          responseQuality: 0.85,
+          overallEngagement: 0.9,
+        },
+        feedback: {
+          strengths: ['Good technical knowledge', 'Clear communication'],
+          weaknesses: ['Could improve confidence', 'More specific examples needed'],
+          suggestions: ['Practice more behavioral questions', 'Work on eye contact'],
+          overallScore: 8.5,
+        },
+        status: 'completed',
+        startedAt: sessionStartTime,
+        completedAt: new Date(),
+      };
+      
+      setSessionState('completed');
+      onSessionComplete(completedSession);
+    }
   }, [
     sessionId,
     config,
     questions,
     responses,
     sessionStartTime,
+    currentResponse,
+    currentQuestionIndex,
+    questionStartTime,
+    session,
+    stopMetricsCollection,
+    addResponse,
+    completeInterviewSession,
     onSessionComplete,
   ]);
 
   const toggleRecording = useCallback(() => {
-    setIsRecording(prev => !prev);
-  }, []);
+    setIsRecording(prev => {
+      const newRecordingState = !prev;
+      
+      if (newRecordingState) {
+        // Start recording response
+        startResponse();
+        console.log('Started recording response');
+      } else {
+        // Stop recording response
+        endResponse();
+        console.log('Stopped recording response');
+      }
+      
+      return newRecordingState;
+    });
+  }, [startResponse, endResponse]);
 
   const toggleCamera = useCallback(() => {
     setIsCameraOn(prev => !prev);
@@ -417,6 +626,78 @@ export function InterviewSession({
               }}
             />
 
+            {/* Real-time Feedback Indicators */}
+            <div className="absolute top-4 left-4 space-y-2">
+              {/* Session Status */}
+              <div className="bg-black bg-opacity-70 rounded-lg px-3 py-2">
+                <div className="flex items-center gap-2 text-sm">
+                  <div
+                    className={`h-2 w-2 rounded-full ${
+                      sessionState === 'in-progress'
+                        ? 'bg-green-500 animate-pulse'
+                        : sessionState === 'paused'
+                        ? 'bg-yellow-500'
+                        : 'bg-gray-500'
+                    }`}
+                  />
+                  <span className="text-white capitalize">
+                    {sessionState === 'in-progress' ? 'Recording' : sessionState}
+                  </span>
+                </div>
+              </div>
+
+              {/* Metrics Collection Status */}
+              {isMetricsCollecting && (
+                <div className="bg-black bg-opacity-70 rounded-lg px-3 py-2">
+                  <div className="flex items-center gap-2 text-sm text-white">
+                    <Activity className="h-3 w-3 text-blue-400 animate-pulse" />
+                    <span>Analyzing</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Real-time Metrics Display */}
+              {isMetricsCollecting && (
+                <div className="bg-black bg-opacity-70 rounded-lg px-3 py-2 space-y-1">
+                  <div className="flex items-center gap-2 text-xs text-white">
+                    <Eye className="h-3 w-3 text-green-400" />
+                    <span>Eye Contact: {getRealTimeMetrics().eyeContactPercentage}%</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-white">
+                    <BarChart3 className="h-3 w-3 text-blue-400" />
+                    <span>Engagement: {Math.round(getRealTimeMetrics().engagementScore)}%</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Session Controls Toggle */}
+            <div className="absolute top-4 right-4">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowMetrics(!showMetrics)}
+                className="bg-black bg-opacity-50 border-gray-600 text-white hover:bg-black hover:bg-opacity-70"
+              >
+                <BarChart3 className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {/* Pause Overlay */}
+            {sessionState === 'paused' && (
+              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                <div className="bg-gray-800 rounded-lg p-6 text-center">
+                  <Pause className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-white mb-2">Interview Paused</h3>
+                  <p className="text-gray-300 mb-4">Click resume to continue</p>
+                  <Button onClick={resumeSession} className="bg-green-600 hover:bg-green-700">
+                    <Play className="h-4 w-4 mr-2" />
+                    Resume Interview
+                  </Button>
+                </div>
+              </div>
+            )}
+
             {/* Controls Overlay */}
             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
               <div className="flex items-center space-x-4 bg-black bg-opacity-50 rounded-full px-6 py-3">
@@ -425,6 +706,7 @@ export function InterviewSession({
                   size="sm"
                   onClick={toggleMic}
                   className="rounded-full"
+                  disabled={sessionState === 'paused'}
                 >
                   {isMicOn ? (
                     <Mic className="h-4 w-4" />
@@ -437,6 +719,7 @@ export function InterviewSession({
                   size="sm"
                   onClick={toggleCamera}
                   className="rounded-full"
+                  disabled={sessionState === 'paused'}
                 >
                   {isCameraOn ? (
                     <Camera className="h-4 w-4" />
@@ -461,15 +744,43 @@ export function InterviewSession({
                   size="sm"
                   onClick={toggleRecording}
                   className="rounded-full"
+                  disabled={sessionState === 'paused'}
                 >
                   <div
-                    className={`h-3 w-3 rounded-full ${isRecording ? 'bg-white animate-pulse' : 'bg-red-500'}`}
+                    className={`h-3 w-3 rounded-full ${
+                      isRecording ? 'bg-white animate-pulse' : 'bg-red-500'
+                    }`}
                   />
                 </Button>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Metrics Panel (Optional) */}
+        {showMetrics && (
+          <div className="w-80 bg-gray-800 border-l border-gray-700">
+            <div className="p-4 border-b border-gray-700">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Real-time Metrics</h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowMetrics(false)}
+                  className="text-gray-400 hover:text-white"
+                >
+                  ×
+                </Button>
+              </div>
+            </div>
+            <div className="p-4">
+              <RealTimeMetricsDashboard
+                isActive={isMetricsCollecting}
+                compact={true}
+              />
+            </div>
+          </div>
+        )}
 
         {/* Question Panel */}
         <div className="w-96 bg-gray-800 border-l border-gray-700 flex flex-col">

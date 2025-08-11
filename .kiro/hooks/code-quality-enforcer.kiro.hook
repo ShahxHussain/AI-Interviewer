@@ -1,0 +1,23 @@
+{
+  "enabled": true,
+  "name": "Code Quality Enforcer",
+  "description": "Automatically applies ESLint rules, Prettier formatting, and custom coding standards when source code files are modified. Checks TypeScript typing, React best practices, accessibility compliance, and naming conventions.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "ai-interviewer/src/**/*.ts",
+      "ai-interviewer/src/**/*.tsx",
+      "ai-interviewer/src/**/*.js",
+      "ai-interviewer/src/**/*.jsx",
+      "ai-interviewer/*.ts",
+      "ai-interviewer/*.tsx",
+      "ai-interviewer/*.js",
+      "ai-interviewer/*.jsx"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A source code file has been modified in the AI Interviewer project. Please perform the following code quality checks and fixes:\n\n1. **ESLint Analysis**: Run ESLint rules and auto-fix any violations that can be automatically resolved\n2. **Prettier Formatting**: Apply consistent code formatting (single quotes, 2-space indentation, 80 character line width)\n3. **TypeScript Validation**: Check for proper typing, missing type annotations, and type safety issues\n4. **React Best Practices**: Verify proper hook usage, component structure, and performance patterns\n5. **Accessibility Compliance**: Check for ARIA attributes, semantic HTML, and accessibility best practices\n6. **Naming Conventions**: Ensure PascalCase for components, camelCase for functions/variables, and consistent file naming\n7. **Import Organization**: Group and sort imports (external libraries, internal components, types)\n8. **AI Interviewer Specific Standards**: Verify adherence to project-specific patterns for authentication, database operations, and API routes\n\nFor any issues that cannot be auto-fixed, provide a clear summary of violations that require manual attention, including file locations and specific recommendations for resolution."
+  }
+}

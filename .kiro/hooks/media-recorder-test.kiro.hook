@@ -1,0 +1,22 @@
+{
+  "enabled": true,
+  "name": "Media Recorder Testing",
+  "description": "Watch for changes in camera, audio, and video recording components. When VideoRecorder.tsx, AudioRecorder.tsx, or related media files are modified, automatically test camera access permissions, audio recording functionality, video stream initialization, and MediaRecorder API compatibility across different browsers.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "ai-interviewer/src/components/**/VideoRecorder.tsx",
+      "ai-interviewer/src/components/**/AudioRecorder.tsx",
+      "ai-interviewer/src/components/**/MediaRecorder.tsx",
+      "ai-interviewer/src/components/interview/**/*.tsx",
+      "ai-interviewer/src/lib/media*.ts",
+      "ai-interviewer/src/hooks/use*media*.ts",
+      "ai-interviewer/src/hooks/use*recorder*.ts"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Media recording components have been modified. Please perform comprehensive testing of:\n\n1. **Camera Access & Permissions**: Test getUserMedia() camera access across Chrome, Firefox, Safari, and Edge. Verify permission prompts work correctly and handle denied permissions gracefully.\n\n2. **Audio Recording Functionality**: Validate audio capture quality, test microphone permissions, verify audio stream initialization, and check for proper cleanup of audio resources.\n\n3. **Video Stream Initialization**: Test video stream startup, resolution settings, frame rate consistency, and proper stream disposal to prevent memory leaks.\n\n4. **MediaRecorder API Compatibility**: Verify MediaRecorder works across different browsers, test various codec support (webm, mp4), and validate recording state transitions (inactive -> recording -> paused -> stopped).\n\n5. **File Output Validation**: Ensure recorded files have non-zero file sizes, validate file formats are correct, test playback functionality, and verify file metadata is properly set.\n\n6. **Facial Analysis Integration**: Test that facial emotion detection works correctly with the video stream, verify eye contact tracking accuracy, validate real-time analysis performance, and ensure analysis doesn't interfere with recording quality.\n\n7. **Error Handling**: Test behavior when camera/microphone is unavailable, verify graceful degradation when permissions are denied, and validate proper error messages are displayed to users.\n\n8. **Performance Testing**: Monitor memory usage during long recordings, test recording quality at different resolutions, and verify smooth operation during concurrent facial analysis.\n\nCreate automated tests for these scenarios and provide a comprehensive report on browser compatibility and functionality status."
+  }
+}

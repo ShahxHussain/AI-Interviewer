@@ -1,0 +1,24 @@
+{
+  "enabled": true,
+  "name": "Interview Flow Integration Test",
+  "description": "Monitor changes to interview session components, user interface elements, and workflow logic. When interview flow code is modified, automatically simulate complete interview sessions from candidate registration through final feedback delivery.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "ai-interviewer/src/components/interview/**/*.tsx",
+      "ai-interviewer/src/components/interview/**/*.ts",
+      "ai-interviewer/src/app/interview*/**/*.tsx",
+      "ai-interviewer/src/app/interview*/**/*.ts",
+      "ai-interviewer/src/app/api/interview*/**/*.ts",
+      "ai-interviewer/src/lib/models/interview*.ts",
+      "ai-interviewer/src/components/auth/**/*.tsx",
+      "ai-interviewer/src/components/dashboard/**/*.tsx",
+      "ai-interviewer/src/components/resume/**/*.tsx"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Interview flow components have been modified. Please perform comprehensive end-to-end testing of the complete interview journey:\n\n1. **Registration & Authentication Flow**: Test candidate registration, login, and profile setup\n2. **Resume Upload & Processing**: Verify resume upload, parsing, and analysis functionality\n3. **Interview Configuration**: Test interview type selection, difficulty settings, and persona choices\n4. **Interview Session Flow**: Simulate complete interview sessions including:\n   - Session initialization and setup\n   - Question delivery and candidate response handling\n   - Real-time analysis (facial emotion, eye contact, voice)\n   - Smooth transitions between interview stages\n   - Error handling and recovery mechanisms\n5. **Feedback & Results**: Test feedback generation, scoring, and report delivery\n6. **Recruiter Dashboard**: Verify recruiter access to candidate results and analytics\n\nFocus on testing all user interactions, validating smooth transitions between stages, ensuring proper error handling, and verifying the complete user journey works seamlessly. Pay special attention to API integrations with Together AI and Murf AI, database operations, and authentication flows."
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "enabled": true,
+  "name": "Auto Test Runner",
+  "description": "Monitor all TypeScript and React component files in the project. When any source file is saved, automatically identify and run the relevant test suites including unit tests, component tests, and integration tests. Display test results in real-time, highlight failing tests with detailed error messages, and provide suggestions for fixing broken functionality. Ensure that critical interview components like VideoRecorder, AudioRecorder, and facial analysis features are thoroughly tested before deployment.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "ai-interviewer/src/**/*.ts",
+      "ai-interviewer/src/**/*.tsx",
+      "ai-interviewer/src/**/*.js",
+      "ai-interviewer/src/**/*.jsx"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A TypeScript/React source file has been modified in the AI Interviewer project. Please:\n\n1. Analyze the changed file to identify what components, functions, or modules were modified\n2. Determine which test files should be run based on the changes (unit tests, component tests, integration tests)\n3. Run the relevant test suites using npm test commands\n4. Display test results in real-time with clear formatting\n5. For any failing tests:\n   - Highlight the failures with detailed error messages\n   - Analyze the root cause of the failure\n   - Provide specific suggestions for fixing the broken functionality\n6. Pay special attention to critical interview components:\n   - VideoRecorder functionality and camera permissions\n   - AudioRecorder functionality and microphone access\n   - Facial analysis features and emotion detection\n   - Interview session state management\n   - Authentication and user flows\n7. If tests pass, provide a brief summary of what was tested and confirmed working\n8. If no relevant tests exist for the modified code, suggest what tests should be created\n\nFocus on ensuring the interview platform remains stable and functional, especially for core user-facing features."
+  }
+}

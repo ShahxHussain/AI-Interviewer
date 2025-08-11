@@ -1,0 +1,25 @@
+{
+  "enabled": true,
+  "name": "Build & Deployment Readiness",
+  "description": "Monitors the entire codebase for modifications and automatically triggers a complete build process including TypeScript compilation, Next.js optimization, and production bundle generation. Analyzes build errors, bundle size changes, validates environment variables, and checks dependency resolution to generate a deployment readiness report.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "ai-interviewer/src/**/*",
+      "ai-interviewer/package.json",
+      "ai-interviewer/package-lock.json",
+      "ai-interviewer/tsconfig.json",
+      "ai-interviewer/next.config.ts",
+      "ai-interviewer/.env.local",
+      "ai-interviewer/.env.example",
+      "ai-interviewer/eslint.config.mjs",
+      "ai-interviewer/postcss.config.mjs",
+      "ai-interviewer/tailwind.config.ts"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Significant changes have been detected in the AI Interviewer codebase. Please perform a comprehensive build and deployment readiness check:\n\n1. **Build Process**: Run TypeScript compilation, Next.js build, and production bundle generation\n2. **Error Analysis**: Check for and report any build errors, type errors, or compilation issues\n3. **Bundle Analysis**: Compare bundle sizes with previous builds and flag significant increases\n4. **Environment Validation**: Verify all required environment variables are properly configured\n5. **Dependency Check**: Ensure all dependencies are resolved and compatible\n6. **Code Quality**: Run linting and formatting checks\n7. **Performance Metrics**: Analyze build performance and optimization opportunities\n\nGenerate a deployment readiness report that includes:\n- Build status (success/failure)\n- Any critical issues that must be resolved before deployment\n- Bundle size analysis and recommendations\n- Environment configuration status\n- Dependency health check results\n- Code quality assessment\n- Recommended next steps for deployment\n\nFocus on the Next.js 15.4.6 framework, TypeScript 5, MongoDB integration, and the AI interview platform's specific requirements."
+  }
+}

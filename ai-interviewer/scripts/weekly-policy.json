@@ -1,0 +1,7 @@
+{
+  "maxAge": 365,
+  "maxSessions": 100,
+  "archiveAfter": 90,
+  "deleteAfter": 730,
+  "description": "Weekly cleanup policy - more aggressive cleanup for storage optimization"
+}

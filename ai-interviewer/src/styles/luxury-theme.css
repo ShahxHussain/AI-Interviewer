@@ -1,0 +1,823 @@
+/* Premium Luxury Design System */
+:root {
+  /* Primary Gold Palette */
+  --gold-50: #fffef7;
+  --gold-100: #fffbeb;
+  --gold-200: #fef3c7;
+  --gold-300: #fde68a;
+  --gold-400: #fbbf24;
+  --gold-500: #f59e0b;
+  --gold-600: #d97706;
+  --gold-700: #b45309;
+  --gold-800: #92400e;
+  --gold-900: #78350f;
+
+  /* Sophisticated Dark Palette */
+  --dark-950: #030303;
+  --dark-900: #0a0a0a;
+  --dark-850: #111111;
+  --dark-800: #1a1a1a;
+  --dark-750: #242424;
+  --dark-700: #2d2d2d;
+  --dark-650: #363636;
+  --dark-600: #404040;
+  --dark-550: #4a4a4a;
+  --dark-500: #525252;
+  --dark-450: #5a5a5a;
+  --dark-400: #737373;
+  --dark-350: #8a8a8a;
+  --dark-300: #a3a3a3;
+  --dark-250: #b8b8b8;
+  --dark-200: #d4d4d4;
+  --dark-150: #e5e5e5;
+  --dark-100: #f5f5f5;
+  --dark-50: #fafafa;
+
+  /* Premium Accent Colors */
+  --emerald-400: #34d399;
+  --emerald-500: #10b981;
+  --emerald-600: #059669;
+  --ruby-400: #f87171;
+  --ruby-500: #ef4444;
+  --ruby-600: #dc2626;
+  --sapphire-400: #60a5fa;
+  --sapphire-500: #3b82f6;
+  --sapphire-600: #2563eb;
+  --amethyst-400: #a78bfa;
+  --amethyst-500: #8b5cf6;
+  --amethyst-600: #7c3aed;
+
+  /* Sophisticated Gradients */
+  --gradient-gold-primary: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+  --gradient-gold-secondary: linear-gradient(135deg, #fde68a 0%, #fbbf24 50%, #f59e0b 100%);
+  --gradient-dark-primary: linear-gradient(135deg, #030303 0%, #0a0a0a 25%, #111111 50%, #1a1a1a 100%);
+  --gradient-dark-secondary: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #404040 100%);
+  --gradient-luxury-hero: linear-gradient(135deg, #030303 0%, #0a0a0a 20%, #111111 40%, #fbbf24 100%);
+  --gradient-luxury-card: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(45, 45, 45, 0.9) 100%);
+  --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+
+  /* Premium Shadows */
+  --shadow-gold-sm: 0 2px 8px rgba(251, 191, 36, 0.15);
+  --shadow-gold-md: 0 4px 20px rgba(251, 191, 36, 0.25);
+  --shadow-gold-lg: 0 8px 32px rgba(251, 191, 36, 0.3);
+  --shadow-gold-xl: 0 12px 48px rgba(251, 191, 36, 0.4);
+  --shadow-dark-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-dark-md: 0 4px 20px rgba(0, 0, 0, 0.4);
+  --shadow-dark-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-dark-xl: 0 12px 48px rgba(0, 0, 0, 0.6);
+  --shadow-luxury: 0 8px 32px rgba(251, 191, 36, 0.2), 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-glass: 0 8px 32px rgba(255, 255, 255, 0.1), 0 2px 8px rgba(0, 0, 0, 0.2);
+
+  /* Typography Scale */
+  --font-luxury: 'Playfair Display', serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+/* Global Luxury Styles */
+.luxury-container {
+  background: var(--gradient-dark);
+  min-height: 100vh;
+  color: var(--dark-100);
+}
+
+.luxury-card {
+  background: rgba(26, 26, 26, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: 16px;
+  box-shadow: var(--shadow-luxury);
+}
+
+.luxury-button-primary {
+  background: var(--gradient-gold);
+  color: var(--dark-900);
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-gold);
+}
+
+.luxury-button-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(251, 191, 36, 0.4);
+}
+
+.luxury-button-secondary {
+  background: transparent;
+  color: var(--gold-400);
+  border: 2px solid var(--gold-400);
+  font-weight: 500;
+  border-radius: 12px;
+  padding: 10px 22px;
+  transition: all 0.3s ease;
+}
+
+.luxury-button-secondary:hover {
+  background: var(--gold-400);
+  color: var(--dark-900);
+  transform: translateY(-1px);
+}
+
+.luxury-input {
+  background: rgba(45, 45, 45, 0.8);
+  border: 2px solid rgba(251, 191, 36, 0.3);
+  border-radius: 12px;
+  padding: 14px 16px;
+  color: var(--dark-100);
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.luxury-input:focus {
+  border-color: var(--gold-400);
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+  outline: none;
+}
+
+.luxury-input::placeholder {
+  color: var(--dark-400);
+}
+
+.luxury-text-gold {
+  background: var(--gradient-gold);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+.luxury-text-primary {
+  color: var(--dark-100);
+  font-weight: 500;
+}
+
+.luxury-text-secondary {
+  color: var(--dark-300);
+  font-weight: 400;
+}
+
+.luxury-badge {
+  background: rgba(251, 191, 36, 0.2);
+  color: var(--gold-300);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  border-radius: 8px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.luxury-progress {
+  background: rgba(45, 45, 45, 0.8);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.luxury-progress-bar {
+  background: var(--gradient-gold);
+  height: 8px;
+  border-radius: 8px;
+  transition: width 0.3s ease;
+}
+
+/* Animation Classes */
+.luxury-fade-in {
+  animation: luxuryFadeIn 0.6s ease-out;
+}
+
+.luxury-slide-up {
+  animation: luxurySlideUp 0.8s ease-out;
+}
+
+.luxury-glow {
+  animation: luxuryGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes luxuryFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes luxurySlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes luxuryGlow {
+  from {
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+  }
+  to {
+    box-shadow: 0 0 30px rgba(251, 191, 36, 0.6);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .luxury-card {
+    margin: 16px;
+    border-radius: 12px;
+  }
+  
+  .luxury-button-primary,
+  .luxury-button-secondary {
+    width: 100%;
+    padding: 14px 24px;
+  }
+}
+/* E
+nhanced Global Luxury Styles */
+.luxury-container {
+  background: var(--gradient-dark-primary);
+  min-height: 100vh;
+  color: var(--dark-100);
+  position: relative;
+  overflow-x: hidden;
+}
+
+.luxury-container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(251, 191, 36, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(251, 191, 36, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Premium Card Styles */
+.luxury-card {
+  background: var(--gradient-luxury-card);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(251, 191, 36, 0.15);
+  border-radius: 20px;
+  box-shadow: var(--shadow-luxury);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.luxury-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--gradient-gold-secondary);
+  opacity: 0.3;
+}
+
+.luxury-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-gold-lg), var(--shadow-dark-lg);
+  border-color: rgba(251, 191, 36, 0.3);
+}
+
+.luxury-card-glass {
+  background: var(--gradient-glass);
+  backdrop-filter: blur(32px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  box-shadow: var(--shadow-glass);
+}
+
+/* Premium Button Styles */
+.luxury-button-primary {
+  background: var(--gradient-gold-primary);
+  color: var(--dark-900);
+  font-weight: 700;
+  font-family: var(--font-body);
+  border: none;
+  border-radius: 16px;
+  padding: 16px 32px;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-gold-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.luxury-button-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s;
+}
+
+.luxury-button-primary:hover::before {
+  left: 100%;
+}
+
+.luxury-button-primary:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: var(--shadow-gold-lg);
+}
+
+.luxury-button-primary:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+.luxury-button-secondary {
+  background: transparent;
+  color: var(--gold-400);
+  border: 2px solid var(--gold-400);
+  font-weight: 600;
+  font-family: var(--font-body);
+  border-radius: 16px;
+  padding: 14px 30px;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.luxury-button-secondary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--gradient-gold-primary);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: -1;
+}
+
+.luxury-button-secondary:hover::before {
+  transform: scaleX(1);
+}
+
+.luxury-button-secondary:hover {
+  color: var(--dark-900);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-gold-md);
+}
+
+.luxury-button-ghost {
+  background: transparent;
+  color: var(--dark-200);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-weight: 500;
+  border-radius: 12px;
+  padding: 12px 24px;
+  transition: all 0.3s ease;
+}
+
+.luxury-button-ghost:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--gold-400);
+  border-color: rgba(251, 191, 36, 0.3);
+}
+
+/* Premium Input Styles */
+.luxury-input {
+  background: rgba(26, 26, 26, 0.8);
+  border: 2px solid rgba(251, 191, 36, 0.2);
+  border-radius: 16px;
+  padding: 18px 20px;
+  color: var(--dark-100);
+  font-size: 16px;
+  font-family: var(--font-body);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(12px);
+}
+
+.luxury-input:focus {
+  border-color: var(--gold-400);
+  box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.1);
+  outline: none;
+  background: rgba(26, 26, 26, 0.95);
+}
+
+.luxury-input::placeholder {
+  color: var(--dark-400);
+  font-weight: 400;
+}
+
+.luxury-select {
+  background: rgba(26, 26, 26, 0.8);
+  border: 2px solid rgba(251, 191, 36, 0.2);
+  border-radius: 16px;
+  padding: 18px 20px;
+  color: var(--dark-100);
+  font-size: 16px;
+  font-family: var(--font-body);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(12px);
+  cursor: pointer;
+}
+
+.luxury-select:focus {
+  border-color: var(--gold-400);
+  box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.1);
+  outline: none;
+}
+
+/* Premium Typography */
+.luxury-text-hero {
+  font-family: var(--font-luxury);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
+  line-height: 1.1;
+  background: var(--gradient-gold-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1rem;
+}
+
+.luxury-text-title {
+  font-family: var(--font-luxury);
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-weight: 600;
+  color: var(--dark-100);
+  margin-bottom: 0.5rem;
+}
+
+.luxury-text-subtitle {
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-weight: 400;
+  color: var(--dark-300);
+  line-height: 1.6;
+}
+
+.luxury-text-gold {
+  background: var(--gradient-gold-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+.luxury-text-primary {
+  color: var(--dark-100);
+  font-weight: 500;
+}
+
+.luxury-text-secondary {
+  color: var(--dark-300);
+  font-weight: 400;
+}
+
+.luxury-text-muted {
+  color: var(--dark-400);
+  font-weight: 400;
+}
+
+/* Premium Badge Styles */
+.luxury-badge {
+  background: rgba(251, 191, 36, 0.15);
+  color: var(--gold-300);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  border-radius: 12px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  backdrop-filter: blur(8px);
+}
+
+.luxury-badge-success {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--emerald-400);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.luxury-badge-error {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--ruby-400);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.luxury-badge-info {
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--sapphire-400);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+/* Premium Progress Styles */
+.luxury-progress {
+  background: rgba(26, 26, 26, 0.8);
+  border-radius: 12px;
+  overflow: hidden;
+  height: 12px;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(251, 191, 36, 0.1);
+}
+
+.luxury-progress-bar {
+  background: var(--gradient-gold-primary);
+  height: 100%;
+  border-radius: 12px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.luxury-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: progressShimmer 2s infinite;
+}
+
+@keyframes progressShimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Premium Modal Styles */
+.luxury-modal-overlay {
+  background: rgba(3, 3, 3, 0.8);
+  backdrop-filter: blur(8px);
+}
+
+.luxury-modal {
+  background: var(--gradient-luxury-card);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: 24px;
+  box-shadow: var(--shadow-luxury), var(--shadow-dark-xl);
+  backdrop-filter: blur(32px);
+}
+
+/* Premium Navigation Styles */
+.luxury-nav {
+  background: rgba(26, 26, 26, 0.95);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(251, 191, 36, 0.1);
+}
+
+.luxury-nav-item {
+  color: var(--dark-300);
+  transition: all 0.3s ease;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.luxury-nav-item:hover {
+  color: var(--gold-400);
+  background: rgba(251, 191, 36, 0.1);
+}
+
+.luxury-nav-item.active {
+  color: var(--gold-400);
+  background: rgba(251, 191, 36, 0.15);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+/* Premium Table Styles */
+.luxury-table {
+  background: var(--gradient-luxury-card);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(251, 191, 36, 0.1);
+}
+
+.luxury-table th {
+  background: rgba(251, 191, 36, 0.1);
+  color: var(--gold-300);
+  font-weight: 600;
+  padding: 16px;
+  text-align: left;
+}
+
+.luxury-table td {
+  padding: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--dark-200);
+}
+
+.luxury-table tr:hover {
+  background: rgba(251, 191, 36, 0.05);
+}
+
+/* Enhanced Animation Classes */
+.luxury-fade-in {
+  animation: luxuryFadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.luxury-slide-up {
+  animation: luxurySlideUp 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.luxury-slide-in-left {
+  animation: luxurySlideInLeft 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.luxury-slide-in-right {
+  animation: luxurySlideInRight 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.luxury-glow {
+  animation: luxuryGlow 3s ease-in-out infinite alternate;
+}
+
+.luxury-pulse {
+  animation: luxuryPulse 2s ease-in-out infinite;
+}
+
+.luxury-float {
+  animation: luxuryFloat 6s ease-in-out infinite;
+}
+
+@keyframes luxuryFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes luxurySlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes luxurySlideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes luxurySlideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes luxuryGlow {
+  from {
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+  }
+  to {
+    box-shadow: 0 0 40px rgba(251, 191, 36, 0.6), 0 0 60px rgba(251, 191, 36, 0.3);
+  }
+}
+
+@keyframes luxuryPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+@keyframes luxuryFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Responsive Enhancements */
+@media (max-width: 1024px) {
+  .luxury-card {
+    border-radius: 16px;
+  }
+  
+  .luxury-button-primary,
+  .luxury-button-secondary {
+    padding: 14px 28px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .luxury-container {
+    padding: 16px;
+  }
+  
+  .luxury-card {
+    margin: 12px;
+    border-radius: 12px;
+    padding: 20px;
+  }
+  
+  .luxury-button-primary,
+  .luxury-button-secondary {
+    width: 100%;
+    padding: 16px 24px;
+    font-size: 16px;
+  }
+  
+  .luxury-input,
+  .luxury-select {
+    padding: 16px 18px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .luxury-text-hero {
+    font-size: 2rem;
+  }
+  
+  .luxury-text-title {
+    font-size: 1.5rem;
+  }
+  
+  .luxury-card {
+    margin: 8px;
+    padding: 16px;
+  }
+}
+
+/* Dark mode optimizations */
+@media (prefers-color-scheme: dark) {
+  .luxury-container {
+    background: var(--gradient-dark-primary);
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .luxury-card {
+    border-width: 2px;
+  }
+  
+  .luxury-button-primary,
+  .luxury-button-secondary {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .luxury-fade-in,
+  .luxury-slide-up,
+  .luxury-slide-in-left,
+  .luxury-slide-in-right,
+  .luxury-glow,
+  .luxury-pulse,
+  .luxury-float {
+    animation: none;
+  }
+  
+  .luxury-button-primary,
+  .luxury-button-secondary,
+  .luxury-card,
+  .luxury-input {
+    transition: none;
+  }
+}

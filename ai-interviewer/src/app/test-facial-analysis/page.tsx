@@ -8,22 +8,23 @@ import { Camera, Brain, Eye, Smile } from 'lucide-react';
 
 export default function TestFacialAnalysisPage() {
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
-            <Brain className="h-8 w-8 text-blue-600" />
+    <div className="min-h-screen bg-gray-50 py-4">
+      <div className="max-w-7xl mx-auto px-4">
+        {/* Compact Header */}
+        <div className="mb-4">
+          <h1 className="text-2xl font-bold text-gray-900 mb-1 flex items-center gap-2">
+            <Brain className="h-6 w-6 text-blue-600" />
             Facial Analysis Test
           </h1>
-          <p className="text-gray-600">
-            Test the real-time facial analysis system with emotion detection,
-            eye contact tracking, and mood analysis.
+          <p className="text-sm text-gray-600">
+            Real-time emotion detection, eye contact tracking, and mood analysis
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Video Recorder */}
-          <div className="lg:col-span-2">
+        {/* Main Content - Single Row Layout */}
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 h-[calc(100vh-140px)]">
+          {/* Video Recorder - Takes up 2 columns */}
+          <div className="xl:col-span-2">
             <VideoRecorder
               onRecordingComplete={videoBlob => {
                 console.log('Video recording completed:', videoBlob);
@@ -37,164 +38,120 @@ export default function TestFacialAnalysisPage() {
               }}
               maxDuration={120} // 2 minutes for testing
               enableFacialAnalysis={true}
+              showQuickTest={true} // Enable 20-second quick test
             />
           </div>
 
-          {/* Instructions and Features */}
-          <div className="space-y-6">
-            {/* Features Card */}
-            <Card className="p-6 bg-blue-50">
-              <h2 className="text-xl font-semibold mb-4 text-blue-900 flex items-center gap-2">
-                <Brain className="h-5 w-5" />
+          {/* Right Sidebar - Compact Instructions */}
+          <div className="xl:col-span-2 space-y-3 overflow-y-auto max-h-full">
+            {/* Quick Features Overview */}
+            <Card className="p-3 bg-blue-50">
+              <h3 className="font-semibold mb-2 text-blue-900 flex items-center gap-2 text-sm">
+                <Brain className="h-4 w-4" />
                 AI Features
-              </h2>
+              </h3>
 
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <Eye className="h-4 w-4 text-blue-600" />
-                  <div>
-                    <p className="font-medium text-sm">Eye Contact Tracking</p>
-                    <p className="text-xs text-gray-600">
-                      Monitors gaze direction and engagement
-                    </p>
-                  </div>
+              <div className="grid grid-cols-1 gap-2 text-xs">
+                <div className="flex items-center gap-2">
+                  <Eye className="h-3 w-3 text-blue-600" />
+                  <span className="font-medium">Eye Contact Tracking</span>
                 </div>
-
-                <div className="flex items-center gap-3">
-                  <Smile className="h-4 w-4 text-green-600" />
-                  <div>
-                    <p className="font-medium text-sm">Emotion Detection</p>
-                    <p className="text-xs text-gray-600">
-                      Real-time facial expression analysis
-                    </p>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <Smile className="h-3 w-3 text-green-600" />
+                  <span className="font-medium">Emotion Detection</span>
                 </div>
-
-                <div className="flex items-center gap-3">
-                  <Camera className="h-4 w-4 text-purple-600" />
-                  <div>
-                    <p className="font-medium text-sm">Head Pose Estimation</p>
-                    <p className="text-xs text-gray-600">
-                      Tracks head position and orientation
-                    </p>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <Camera className="h-3 w-3 text-purple-600" />
+                  <span className="font-medium">Head Pose Estimation</span>
                 </div>
               </div>
             </Card>
 
-            {/* Testing Instructions */}
-            <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-4">
-                Testing Instructions
-              </h2>
-
-              <div className="space-y-4">
-                <div>
-                  <h3 className="font-medium text-sm mb-2">1. Setup</h3>
-                  <ul className="text-xs text-gray-600 space-y-1">
-                    <li>• Allow camera and microphone permissions</li>
-                    <li>• Ensure good lighting on your face</li>
-                    <li>• Position camera at eye level</li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="font-medium text-sm mb-2">2. Recording</h3>
-                  <ul className="text-xs text-gray-600 space-y-1">
-                    <li>• Click &quot;Start Recording&quot; to begin</li>
-                    <li>• Look directly at the camera</li>
-                    <li>• Try different facial expressions</li>
-                    <li>• Move your head slightly to test pose detection</li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="font-medium text-sm mb-2">3. Analysis</h3>
-                  <ul className="text-xs text-gray-600 space-y-1">
-                    <li>• Watch real-time emotion scores</li>
-                    <li>• Monitor eye contact percentage</li>
-                    <li>• Observe mood timeline changes</li>
-                    <li>• Check overall performance metrics</li>
-                  </ul>
+            {/* Quick Test Options */}
+            <Card className="p-3 bg-orange-50">
+              <h3 className="font-semibold mb-2 text-sm text-orange-900">
+                Quick Test
+              </h3>
+              <div className="space-y-2">
+                <p className="text-xs text-orange-700">
+                  Try the 20-second analysis test for quick results
+                </p>
+                <div className="text-xs text-orange-600">
+                  <p>• Automatic recording for 20 seconds</p>
+                  <p>• Instant analysis summary</p>
+                  <p>• Perfect for quick testing</p>
                 </div>
               </div>
             </Card>
 
-            {/* Emotions to Test */}
-            <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Emotions to Test</h2>
+            {/* Quick Instructions */}
+            <Card className="p-3">
+              <h3 className="font-semibold mb-2 text-sm">Quick Start</h3>
+              <div className="space-y-1 text-xs text-gray-600">
+                <p>1. Allow camera permissions</p>
+                <p>
+                  2. Click &quot;Start Recording&quot; or &quot;20s Test&quot;
+                </p>
+                <p>3. Look at camera & try different expressions</p>
+                <p>4. Watch real-time analysis below</p>
+              </div>
+            </Card>
 
-              <div className="grid grid-cols-2 gap-2">
+            {/* Emotions to Test - Compact Grid */}
+            <Card className="p-3">
+              <h3 className="font-semibold mb-2 text-sm">Test Emotions</h3>
+              <div className="grid grid-cols-3 gap-1">
                 {[
-                  {
-                    name: 'Happy',
-                    emoji: '😊',
-                    color: 'bg-green-100 text-green-800',
-                  },
-                  {
-                    name: 'Neutral',
-                    emoji: '😐',
-                    color: 'bg-gray-100 text-gray-800',
-                  },
-                  {
-                    name: 'Surprised',
-                    emoji: '😮',
-                    color: 'bg-yellow-100 text-yellow-800',
-                  },
-                  {
-                    name: 'Sad',
-                    emoji: '😢',
-                    color: 'bg-blue-100 text-blue-800',
-                  },
-                  {
-                    name: 'Angry',
-                    emoji: '😠',
-                    color: 'bg-red-100 text-red-800',
-                  },
-                  {
-                    name: 'Fearful',
-                    emoji: '😨',
-                    color: 'bg-purple-100 text-purple-800',
-                  },
+                  { name: 'Happy', emoji: '😊' },
+                  { name: 'Neutral', emoji: '😐' },
+                  { name: 'Surprised', emoji: '😮' },
+                  { name: 'Sad', emoji: '😢' },
+                  { name: 'Angry', emoji: '😠' },
+                  { name: 'Fearful', emoji: '😨' },
                 ].map(emotion => (
-                  <Badge
+                  <div
                     key={emotion.name}
-                    variant="outline"
-                    className={`${emotion.color} justify-center py-2`}
+                    className="text-center p-2 bg-gray-50 rounded text-xs hover:bg-gray-100 transition-colors"
                   >
-                    <span className="mr-2">{emotion.emoji}</span>
-                    {emotion.name}
-                  </Badge>
+                    <div className="text-lg mb-1">{emotion.emoji}</div>
+                    <div className="font-medium">{emotion.name}</div>
+                  </div>
                 ))}
               </div>
-
-              <p className="text-xs text-gray-600 mt-3">
-                Try expressing these emotions during recording to test the
-                detection accuracy.
-              </p>
             </Card>
 
-            {/* Technical Info */}
-            <Card className="p-6 bg-gray-50">
-              <h2 className="text-xl font-semibold mb-4">Technical Details</h2>
-
-              <div className="space-y-2 text-sm">
+            {/* Technical Info - Compact */}
+            <Card className="p-3 bg-gray-50">
+              <h3 className="font-semibold mb-2 text-sm">Technical Info</h3>
+              <div className="space-y-1 text-xs">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Analysis Frequency:</span>
-                  <span className="font-medium">1 Hz (every second)</span>
+                  <span className="text-gray-600">Frequency:</span>
+                  <span className="font-medium">1 Hz</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Face Detection:</span>
+                  <span className="text-gray-600">Detection:</span>
                   <span className="font-medium">TinyFaceDetector</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Emotion Model:</span>
-                  <span className="font-medium">FaceExpressionNet</span>
+                  <span className="text-gray-600">Emotions:</span>
+                  <span className="font-medium">7 types</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Landmarks:</span>
-                  <span className="font-medium">68-point model</span>
+                  <span className="font-medium">68 points</span>
                 </div>
+              </div>
+            </Card>
+
+            {/* Status Indicator */}
+            <Card className="p-3 bg-green-50">
+              <h3 className="font-semibold mb-2 text-sm text-green-900">
+                Status
+              </h3>
+              <div className="text-xs text-green-700">
+                <p>✓ Face-api.js models loaded</p>
+                <p>✓ Real-time analysis ready</p>
+                <p>✓ Camera detection active</p>
               </div>
             </Card>
           </div>

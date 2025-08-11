@@ -3,14 +3,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { RegisterData } from '@/types';
-import {
-  Form,
-  FormField,
-  Label,
-  Input,
-  Select,
-  Button,
-} from '@/components/ui/form';
+import { Mail, Lock, User, Building, Eye, EyeOff, UserPlus } from 'lucide-react';
 
 interface RegisterFormProps {
   onSuccess?: () => void;
@@ -24,6 +17,7 @@ export function RegisterForm({
   const { register } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState<RegisterData>({
     email: '',
     password: '',
@@ -104,147 +98,224 @@ export function RegisterForm({
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
-        <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Create Account
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
-            Join AI-Interviewer to start practicing
-          </p>
-        </div>
+    <div className="w-full">
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-bold luxury-text-gold font-playfair mb-2">
+          Join the Elite
+        </h2>
+        <p className="luxury-text-secondary text-lg">
+          Create your account and elevate your career
+        </p>
+      </div>
 
-        {error && (
-          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+      {error && (
+        <div className="mb-6 p-4 bg-red-900/20 border border-red-500/30 text-red-300 rounded-lg backdrop-blur-sm">
+          <div className="flex items-center gap-2">
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
             {error}
           </div>
-        )}
+        </div>
+      )}
 
-        <Form onSubmit={handleSubmit}>
-          <FormField>
-            <Label htmlFor="role" required>
-              I am a
-            </Label>
-            <Select
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Role Selection */}
+        <div className="space-y-2">
+          <label htmlFor="role" className="block text-sm font-semibold luxury-text-primary">
+            I am a
+          </label>
+          <div className="relative">
+            <select
               id="role"
               name="role"
               value={formData.role}
               onChange={handleInputChange}
-              error={fieldErrors.role}
+              className="luxury-input w-full appearance-none cursor-pointer"
+              disabled={loading}
             >
-              <option value="candidate">Candidate</option>
-              <option value="recruiter">Recruiter</option>
-            </Select>
-          </FormField>
+              <option value="candidate">🎯 Candidate - Looking for opportunities</option>
+              <option value="recruiter">🏢 Recruiter - Hiring talent</option>
+            </select>
+            <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+              <svg className="w-5 h-5 text-gold-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </div>
+          </div>
+        </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <FormField>
-              <Label htmlFor="firstName" required>
-                First Name
-              </Label>
-              <Input
+        {/* Name Fields */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <label htmlFor="firstName" className="block text-sm font-semibold luxury-text-primary">
+              First Name
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <User className="h-5 w-5 text-gold-400" />
+              </div>
+              <input
                 id="firstName"
                 name="firstName"
                 type="text"
                 value={formData.firstName}
                 onChange={handleInputChange}
-                error={fieldErrors.firstName}
+                className={`luxury-input w-full pl-12 ${fieldErrors.firstName ? 'border-red-500' : ''}`}
                 placeholder="John"
+                disabled={loading}
               />
-            </FormField>
+            </div>
+            {fieldErrors.firstName && (
+              <p className="text-red-400 text-sm mt-1">{fieldErrors.firstName}</p>
+            )}
+          </div>
 
-            <FormField>
-              <Label htmlFor="lastName" required>
-                Last Name
-              </Label>
-              <Input
+          <div className="space-y-2">
+            <label htmlFor="lastName" className="block text-sm font-semibold luxury-text-primary">
+              Last Name
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <User className="h-5 w-5 text-gold-400" />
+              </div>
+              <input
                 id="lastName"
                 name="lastName"
                 type="text"
                 value={formData.lastName}
                 onChange={handleInputChange}
-                error={fieldErrors.lastName}
+                className={`luxury-input w-full pl-12 ${fieldErrors.lastName ? 'border-red-500' : ''}`}
                 placeholder="Doe"
+                disabled={loading}
               />
-            </FormField>
+            </div>
+            {fieldErrors.lastName && (
+              <p className="text-red-400 text-sm mt-1">{fieldErrors.lastName}</p>
+            )}
           </div>
+        </div>
 
-          {formData.role === 'recruiter' && (
-            <FormField>
-              <Label htmlFor="companyName" required>
-                Company Name
-              </Label>
-              <Input
+        {/* Company Name (for recruiters) */}
+        {formData.role === 'recruiter' && (
+          <div className="space-y-2">
+            <label htmlFor="companyName" className="block text-sm font-semibold luxury-text-primary">
+              Company Name
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <Building className="h-5 w-5 text-gold-400" />
+              </div>
+              <input
                 id="companyName"
                 name="companyName"
                 type="text"
                 value={formData.companyName}
                 onChange={handleInputChange}
-                error={fieldErrors.companyName}
-                placeholder="Acme Corp"
+                className={`luxury-input w-full pl-12 ${fieldErrors.companyName ? 'border-red-500' : ''}`}
+                placeholder="Acme Corporation"
+                disabled={loading}
               />
-            </FormField>
-          )}
+            </div>
+            {fieldErrors.companyName && (
+              <p className="text-red-400 text-sm mt-1">{fieldErrors.companyName}</p>
+            )}
+          </div>
+        )}
 
-          <FormField>
-            <Label htmlFor="email" required>
-              Email Address
-            </Label>
-            <Input
+        {/* Email Field */}
+        <div className="space-y-2">
+          <label htmlFor="email" className="block text-sm font-semibold luxury-text-primary">
+            Email Address
+          </label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <Mail className="h-5 w-5 text-gold-400" />
+            </div>
+            <input
               id="email"
               name="email"
               type="email"
               value={formData.email}
               onChange={handleInputChange}
-              error={fieldErrors.email}
+              className={`luxury-input w-full pl-12 ${fieldErrors.email ? 'border-red-500' : ''}`}
               placeholder="john@example.com"
+              disabled={loading}
             />
-          </FormField>
+          </div>
+          {fieldErrors.email && (
+            <p className="text-red-400 text-sm mt-1">{fieldErrors.email}</p>
+          )}
+        </div>
 
-          <FormField>
-            <Label htmlFor="password" required>
-              Password
-            </Label>
-            <Input
+        {/* Password Field */}
+        <div className="space-y-2">
+          <label htmlFor="password" className="block text-sm font-semibold luxury-text-primary">
+            Password
+          </label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <Lock className="h-5 w-5 text-gold-400" />
+            </div>
+            <input
               id="password"
               name="password"
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               value={formData.password}
               onChange={handleInputChange}
-              error={fieldErrors.password}
-              placeholder="••••••••"
+              className={`luxury-input w-full pl-12 pr-12 ${fieldErrors.password ? 'border-red-500' : ''}`}
+              placeholder="Create a strong password"
+              disabled={loading}
             />
-            <p className="text-xs text-gray-500 mt-1">
-              Must be at least 8 characters with uppercase, lowercase, and
-              number
-            </p>
-          </FormField>
-
-          <Button
-            type="submit"
-            className="w-full"
-            loading={loading}
-            disabled={loading}
-          >
-            {loading ? 'Creating Account...' : 'Create Account'}
-          </Button>
-        </Form>
-
-        {onSwitchToLogin && (
-          <div className="mt-6 text-center">
-            <p className="text-gray-600 dark:text-gray-400">
-              Already have an account?{' '}
-              <button
-                onClick={onSwitchToLogin}
-                className="text-blue-600 hover:text-blue-500 font-medium"
-              >
-                Sign in
-              </button>
-            </p>
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-0 pr-4 flex items-center text-gold-400 hover:text-gold-300 transition-colors"
+            >
+              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            </button>
           </div>
-        )}
-      </div>
+          {fieldErrors.password && (
+            <p className="text-red-400 text-sm mt-1">{fieldErrors.password}</p>
+          )}
+          <p className="text-xs luxury-text-secondary">
+            Must be at least 8 characters with uppercase, lowercase, and number
+          </p>
+        </div>
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={loading}
+          className="luxury-button-primary w-full flex items-center justify-center gap-2 text-lg font-semibold py-4"
+        >
+          {loading ? (
+            <>
+              <div className="w-5 h-5 border-2 border-dark-900 border-t-transparent rounded-full animate-spin"></div>
+              Creating Account...
+            </>
+          ) : (
+            <>
+              <UserPlus className="h-5 w-5" />
+              Create Account
+            </>
+          )}
+        </button>
+      </form>
+
+      {onSwitchToLogin && (
+        <div className="mt-8 text-center">
+          <p className="luxury-text-secondary">
+            Already have an account?{' '}
+            <button
+              onClick={onSwitchToLogin}
+              className="luxury-text-gold hover:text-gold-300 font-semibold transition-colors"
+            >
+              Sign In
+            </button>
+          </p>
+        </div>
+      )}
     </div>
   );
 }

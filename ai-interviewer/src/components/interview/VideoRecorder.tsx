@@ -25,6 +25,7 @@ interface VideoRecorderProps {
   maxDuration?: number; // in seconds
   className?: string;
   enableFacialAnalysis?: boolean;
+  showQuickTest?: boolean; // Show 20-second quick test button
 }
 
 interface MediaDevices {
@@ -38,6 +39,7 @@ export function VideoRecorder({
   maxDuration = 300, // 5 minutes default
   className = '',
   enableFacialAnalysis = true,
+  showQuickTest = false,
 }: VideoRecorderProps) {
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -131,45 +133,92 @@ export function VideoRecorder({
   // Request permissions and start camera preview
   const requestPermissions = useCallback(async () => {
     try {
+      console.log('🎥 Requesting camera permissions...');
+
+      // Check if getUserMedia is supported
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('getUserMedia is not supported in this browser');
+      }
+
+      // Try with very basic constraints first
       const constraints: MediaStreamConstraints = {
-        video: isVideoEnabled
-          ? {
-              deviceId: selectedVideoDevice
-                ? { exact: selectedVideoDevice }
-                : undefined,
-              width: { ideal: 1280, min: 640 },
-              height: { ideal: 720, min: 480 },
-              frameRate: { ideal: 30, min: 15 },
-              facingMode: 'user', // Prefer front-facing camera
-            }
-          : false,
-        audio: isAudioEnabled
-          ? {
-              deviceId: selectedAudioDevice
-                ? { exact: selectedAudioDevice }
-                : undefined,
-              echoCancellation: true,
-              noiseSuppression: true,
-              autoGainControl: true,
-              sampleRate: 44100,
-            }
-          : false,
+        video: isVideoEnabled,
+        audio: isAudioEnabled,
       };
 
+      console.log('📋 Trying basic constraints:', constraints);
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
+
+      console.log('✅ Basic stream obtained:', {
+        videoTracks: stream.getVideoTracks().length,
+        audioTracks: stream.getAudioTracks().length,
+      });
+
+      // Set up the stream
       streamRef.current = stream;
 
-      if (videoRef.current && isVideoEnabled) {
+      if (
+        videoRef.current &&
+        isVideoEnabled &&
+        stream.getVideoTracks().length > 0
+      ) {
         videoRef.current.srcObject = stream;
+        console.log('📺 Video element connected to stream');
+
+        // Wait for video to be ready
+        videoRef.current.onloadedmetadata = () => {
+          console.log('📹 Video metadata loaded, starting playback');
+          videoRef.current
+            ?.play()
+            .catch(e => console.warn('Video play failed:', e));
+        };
       }
 
       setHasPermissions(true);
+      console.log('✅ Permissions granted successfully');
       await getMediaDevices();
     } catch (error) {
       console.error('Error requesting permissions:', error);
-      onError?.(
-        'Failed to access camera/microphone. Please check permissions.'
-      );
+
+      // Provide more specific error messages
+      let errorMessage = 'Failed to access camera/microphone. ';
+
+      if (error instanceof Error) {
+        if (error.name === 'NotAllowedError') {
+          errorMessage +=
+            'Please allow camera and microphone permissions in your browser.';
+        } else if (error.name === 'NotFoundError') {
+          errorMessage +=
+            'No camera or microphone found. Please connect your USB camera and refresh the page.';
+        } else if (error.name === 'NotReadableError') {
+          errorMessage +=
+            'Camera is already in use by another application. Please close other apps using the camera.';
+        } else if (error.name === 'OverconstrainedError') {
+          errorMessage +=
+            'Camera settings not supported. Trying with basic settings...';
+
+          // Try with very basic constraints as fallback
+          try {
+            const basicStream = await navigator.mediaDevices.getUserMedia({
+              video: true,
+              audio: true,
+            });
+            streamRef.current = basicStream;
+            if (videoRef.current) {
+              videoRef.current.srcObject = basicStream;
+            }
+            setHasPermissions(true);
+            await getMediaDevices();
+            return;
+          } catch (fallbackError) {
+            errorMessage += ' Fallback also failed.';
+          }
+        } else {
+          errorMessage += `Error: ${error.message}`;
+        }
+      }
+
+      onError?.(errorMessage);
       setHasPermissions(false);
     }
   }, [
@@ -181,66 +230,123 @@ export function VideoRecorder({
     onError,
   ]);
 
-  // Start recording
-  const startRecording = useCallback(async () => {
-    if (!streamRef.current) {
-      await requestPermissions();
-      if (!streamRef.current) return;
-    }
-
-    try {
-      chunksRef.current = [];
-
-      const mediaRecorder = new MediaRecorder(streamRef.current, {
-        mimeType: 'video/webm;codecs=vp9,opus',
+  // Start recording with optional duration override
+  const startRecording = useCallback(
+    async (durationOverride?: number) => {
+      console.log('🎬 Starting recording...', {
+        hasStream: !!streamRef.current,
+        hasPermissions,
+        streamTracks: streamRef.current?.getTracks().length || 0,
       });
 
-      mediaRecorderRef.current = mediaRecorder;
-
-      mediaRecorder.ondataavailable = event => {
-        if (event.data.size > 0) {
-          chunksRef.current.push(event.data);
+      if (!streamRef.current) {
+        console.log('❌ No stream available, requesting permissions...');
+        await requestPermissions();
+        if (!streamRef.current) {
+          console.log('❌ Still no stream after requesting permissions');
+          onError?.('Failed to access camera. Please click "Start Camera" first.');
+          return;
         }
-      };
-
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: 'video/webm' });
-        setRecordedBlob(blob);
-        onRecordingComplete?.(blob);
-      };
-
-      mediaRecorder.start(1000); // Collect data every second
-      setIsRecording(true);
-      setRecordingTime(0);
-
-      // Start facial analysis if enabled and video element is available
-      if (enableFacialAnalysis && videoRef.current && isFacialAnalysisReady) {
-        await startFacialAnalysis(videoRef.current);
       }
 
-      // Start timer
-      timerRef.current = setInterval(() => {
-        setRecordingTime(prev => {
-          const newTime = prev + 1;
-          if (newTime >= maxDuration) {
-            stopRecording();
+      // Verify stream is active
+      const videoTracks = streamRef.current.getVideoTracks();
+      const audioTracks = streamRef.current.getAudioTracks();
+      
+      console.log('📊 Stream info:', {
+        videoTracks: videoTracks.length,
+        audioTracks: audioTracks.length,
+        videoEnabled: videoTracks[0]?.enabled,
+        audioEnabled: audioTracks[0]?.enabled,
+      });
+
+      if (videoTracks.length === 0 && audioTracks.length === 0) {
+        console.log('❌ No active tracks in stream');
+        onError?.('No active camera or microphone tracks. Please restart camera.');
+        return;
+      }
+
+      try {
+        chunksRef.current = [];
+
+        // Try different codec options
+        let mimeType = 'video/webm;codecs=vp9,opus';
+        if (!MediaRecorder.isTypeSupported(mimeType)) {
+          mimeType = 'video/webm;codecs=vp8,opus';
+          if (!MediaRecorder.isTypeSupported(mimeType)) {
+            mimeType = 'video/webm';
           }
-          return newTime;
+        }
+
+        console.log('🎥 Using MIME type:', mimeType);
+
+        const mediaRecorder = new MediaRecorder(streamRef.current, {
+          mimeType,
         });
-      }, 1000);
-    } catch (error) {
-      console.error('Error starting recording:', error);
-      onError?.('Failed to start recording');
-    }
-  }, [
-    requestPermissions,
-    maxDuration,
-    onRecordingComplete,
-    onError,
-    enableFacialAnalysis,
-    isFacialAnalysisReady,
-    startFacialAnalysis,
-  ]);
+
+        mediaRecorderRef.current = mediaRecorder;
+
+        mediaRecorder.ondataavailable = event => {
+          if (event.data.size > 0) {
+            chunksRef.current.push(event.data);
+          }
+        };
+
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(chunksRef.current, { type: 'video/webm' });
+          setRecordedBlob(blob);
+          onRecordingComplete?.(blob);
+
+          // Show analysis summary for quick test
+          if (durationOverride === 20 && enableFacialAnalysis) {
+            const summary = getAnalysisSummary();
+            alert(
+              `20-Second Analysis Complete!\n\nEye Contact: ${Math.round(summary.eyeContactPercentage)}%\nDominant Emotion: ${summary.dominantEmotion}\nConfidence: ${Math.round(summary.averageConfidence * 100)}%\nData Points: ${summary.totalDataPoints}`
+            );
+          }
+        };
+
+        mediaRecorder.start(1000); // Collect data every second
+        setIsRecording(true);
+        setRecordingTime(0);
+
+        // Start facial analysis if enabled and video element is available
+        if (enableFacialAnalysis && videoRef.current && isFacialAnalysisReady) {
+          await startFacialAnalysis(videoRef.current);
+        }
+
+        // Start timer with duration override for quick test
+        const duration = durationOverride || maxDuration;
+        timerRef.current = setInterval(() => {
+          setRecordingTime(prev => {
+            const newTime = prev + 1;
+            if (newTime >= duration) {
+              stopRecording();
+            }
+            return newTime;
+          });
+        }, 1000);
+      } catch (error) {
+        console.error('Error starting recording:', error);
+        onError?.('Failed to start recording');
+      }
+    },
+    [
+      requestPermissions,
+      maxDuration,
+      onRecordingComplete,
+      onError,
+      enableFacialAnalysis,
+      isFacialAnalysisReady,
+      startFacialAnalysis,
+      getAnalysisSummary,
+    ]
+  );
+
+  // Quick 20-second test
+  const startQuickTest = useCallback(() => {
+    startRecording(20);
+  }, [startRecording]);
 
   // Stop recording
   const stopRecording = useCallback(() => {
@@ -323,14 +429,27 @@ export function VideoRecorder({
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
+  // Release camera resources
+  const releaseCamera = useCallback(() => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => {
+        track.stop();
+        console.log(`Stopped ${track.kind} track:`, track.label);
+      });
+      streamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+    setHasPermissions(false);
+  }, []);
+
   // Initialize on mount
   useEffect(() => {
     requestPermissions();
 
     return () => {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
-      }
+      releaseCamera();
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
@@ -400,16 +519,43 @@ export function VideoRecorder({
           {/* Controls */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
+              {/* Camera Access Button */}
+              {!hasPermissions && (
+                <Button
+                  onClick={requestPermissions}
+                  variant="outline"
+                  className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+                >
+                  <Camera className="h-4 w-4 mr-2" />
+                  Start Camera
+                </Button>
+              )}
+
               {/* Record/Stop Button */}
               {!isRecording ? (
-                <Button
-                  onClick={startRecording}
-                  disabled={!hasPermissions}
-                  className="bg-red-600 hover:bg-red-700"
-                >
-                  <Play className="h-4 w-4 mr-2" />
-                  Start Recording
-                </Button>
+                <>
+                  <Button
+                    onClick={() => startRecording()}
+                    disabled={!hasPermissions}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    <Play className="h-4 w-4 mr-2" />
+                    Start Recording
+                  </Button>
+
+                  {/* Quick Test Button */}
+                  {showQuickTest && (
+                    <Button
+                      onClick={startQuickTest}
+                      disabled={!hasPermissions}
+                      variant="outline"
+                      className="bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-100"
+                    >
+                      <Play className="h-4 w-4 mr-2" />
+                      20s Test
+                    </Button>
+                  )}
+                </>
               ) : (
                 <Button onClick={stopRecording} variant="destructive">
                   <Square className="h-4 w-4 mr-2" />
@@ -445,6 +591,16 @@ export function VideoRecorder({
                 ) : (
                   <MicOff className="h-4 w-4" />
                 )}
+              </Button>
+
+              {/* Release Camera Button */}
+              <Button
+                onClick={releaseCamera}
+                variant="outline"
+                size="sm"
+                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+              >
+                Release Camera
               </Button>
             </div>
 

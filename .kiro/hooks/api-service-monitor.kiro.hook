@@ -1,0 +1,22 @@
+{
+  "enabled": true,
+  "name": "API Service Monitor",
+  "description": "Monitor API route files and external service integrations. When changes are detected in Together.ai, Murf.ai, or MongoDB connection code, automatically test API endpoints, validate response formats, check authentication tokens, and verify database connectivity. Alert if any external service is unreachable or returning unexpected responses, and suggest fallback mechanisms for improved reliability.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "ai-interviewer/src/app/api/**/*.ts",
+      "ai-interviewer/src/lib/mongodb.ts",
+      "ai-interviewer/src/lib/auth.ts",
+      "ai-interviewer/src/lib/services/**/*.ts",
+      "ai-interviewer/test-db-connection.js",
+      "ai-interviewer/.env.local",
+      "ai-interviewer/.env.example"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Changes detected in API routes or external service integration files. Please:\n\n1. **Test API Endpoints**: Verify all affected API routes are responding correctly\n2. **Validate Response Formats**: Check that API responses match expected schemas\n3. **Check Authentication**: Verify JWT tokens and authentication flows are working\n4. **Test Database Connectivity**: Ensure MongoDB connections are stable and queries execute properly\n5. **Verify External Services**: \n   - Test Together.ai API integration and response handling\n   - Validate Murf.ai voice synthesis functionality\n   - Check for proper error handling and timeout configurations\n6. **Service Health Check**: Alert if any external service is unreachable or returning unexpected responses\n7. **Suggest Fallbacks**: Recommend fallback mechanisms, retry logic, or graceful degradation strategies for improved reliability\n\nFocus on identifying potential integration issues, authentication problems, or service disruptions that could impact the AI interviewer platform's functionality."
+  }
+}
