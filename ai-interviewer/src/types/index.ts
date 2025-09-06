@@ -178,11 +178,36 @@ export interface JobPosting {
   id: string;
   title: string;
   description: string;
+  responsibilities: string[];
+  requirements: string[];
   requiredSkills: string[];
   experienceLevel: string;
+  interviewFlow: InterviewFlowConfig;
   recruiterId: string;
   createdAt: Date;
+  updatedAt: Date;
   isActive: boolean;
+  status: 'draft' | 'active' | 'paused' | 'closed';
+  applicationsCount?: number;
+  viewsCount?: number;
+}
+
+export interface InterviewFlowConfig {
+  interviewTypes: InterviewType[];
+  difficulty: DifficultyLevel;
+  topicFocus: TopicFocus[];
+  estimatedDuration: number; // in minutes
+  customQuestions?: string[];
+}
+
+export interface JobApplication {
+  id: string;
+  jobPostingId: string;
+  candidateId: string;
+  status: 'applied' | 'interview-scheduled' | 'interview-completed' | 'rejected' | 'hired';
+  appliedAt: Date;
+  interviewSessionId?: string;
+  notes?: string;
 }
 
 export interface InterviewReport {

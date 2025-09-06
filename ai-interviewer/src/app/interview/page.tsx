@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { ModernDashboardLayout } from '@/components/layout/ModernDashboardLayout';
 import { InterviewSelection } from '@/components/interview/InterviewSelection';
 import { CustomizationPanel } from '@/components/interview/CustomizationPanel';
 import { InterviewSession } from '@/components/interview/InterviewSession';
@@ -263,12 +263,10 @@ export default function InterviewPage() {
   };
 
   return (
-    <DashboardLayout>
-      <div className="py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {renderCurrentStep()}
-        </div>
+    <ModernDashboardLayout>
+      <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+        {renderCurrentStep()}
       </div>
-    </DashboardLayout>
+    </ModernDashboardLayout>
   );
 }

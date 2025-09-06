@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Inter, Playfair_Display } from 'next/font/google';
 import { AuthProvider } from '@/hooks/useAuth';
 import './globals.css';
-import '../styles/premium-design-system.css';
+import '../styles/dashboard-theme.css';
 
 const inter = Inter({
   variable: '--font-primary',

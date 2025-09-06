@@ -12,9 +12,9 @@ interface SessionHistoryFiltersProps {
   onFiltersChange: (filters: SessionFilters) => void;
 }
 
-export function SessionHistoryFilters({ 
-  filters, 
-  onFiltersChange 
+export function SessionHistoryFilters({
+  filters,
+  onFiltersChange
 }: SessionHistoryFiltersProps) {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [searchQuery, setSearchQuery] = useState(filters.searchQuery || '');
@@ -157,7 +157,7 @@ export function SessionHistoryFilters({
             <Input
               type="date"
               value={filters.dateFrom ? filters.dateFrom.toISOString().split('T')[0] : ''}
-              onChange={(e) => 
+              onChange={(e) =>
                 handleFilterChange('dateFrom', e.target.value ? new Date(e.target.value) : undefined)
               }
             />
@@ -170,7 +170,7 @@ export function SessionHistoryFilters({
             <Input
               type="date"
               value={filters.dateTo ? filters.dateTo.toISOString().split('T')[0] : ''}
-              onChange={(e) => 
+              onChange={(e) =>
                 handleFilterChange('dateTo', e.target.value ? new Date(e.target.value) : undefined)
               }
             />
@@ -183,12 +183,12 @@ export function SessionHistoryFilters({
         <div className="flex flex-wrap gap-2">
           {Object.entries(filters).map(([key, value]) => {
             if (!value) return null;
-            
+
             let displayValue = value.toString();
             if (key === 'dateFrom' || key === 'dateTo') {
               displayValue = new Date(value as Date).toLocaleDateString();
             }
-            
+
             return (
               <span
                 key={key}

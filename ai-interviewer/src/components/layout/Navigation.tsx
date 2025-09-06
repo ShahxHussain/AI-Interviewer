@@ -68,7 +68,7 @@ export function Navigation({
 
   const recruiterNavItems = [
     {
-      href: '/dashboard',
+      href: '/recruiter/dashboard',
       label: 'Dashboard',
       icon: Home,
       description: 'Overview and analytics',

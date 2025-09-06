@@ -16,20 +16,13 @@ import {
   BookOpen,
   Zap,
   ArrowRight,
-  BarChart3
+  Plus
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-export default function DashboardPage() {
+export default function ModernDashboardPage() {
   const { user } = useAuth();
   const router = useRouter();
-
-  // Redirect recruiters to their specific dashboard
-  React.useEffect(() => {
-    if (user && user.role === 'recruiter') {
-      router.push('/recruiter/dashboard');
-    }
-  }, [user, router]);
 
   const handleStartInterview = () => {
     router.push('/interview');
@@ -135,16 +128,10 @@ export default function DashboardPage() {
 
   return (
     <ModernDashboardLayout>
-      <div style={{ 
-        display: 'block',
-        margin: '0',
-        padding: '0',
-        position: 'relative',
-        top: '0'
-      }}>
+      <div className="space-y-8">
         {/* Welcome Section */}
-        <div style={{ marginBottom: '32px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div className="animate-fade-in">
+          <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>
                 Welcome back, {user?.firstName}! 👋
@@ -166,12 +153,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Stats Grid */}
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
-          gap: '24px',
-          marginBottom: '32px'
-        }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-slide-in">
           {stats.map((stat, index) => (
             <div key={stat.name} className="dashboard-stat-card" style={{ animationDelay: `${index * 0.1}s` }}>
               <div className="flex items-center justify-between">
@@ -198,7 +180,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Quick Actions */}
-        <div>
+        <div className="animate-fade-in">
           <h2 className="text-xl font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>
             Quick Actions
           </h2>
@@ -239,7 +221,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Recent Activity & Progress */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in">
           {/* Recent Activity */}
           <div className="dashboard-card p-6">
             <div className="flex items-center justify-between mb-6">
@@ -372,7 +354,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Upcoming Features */}
-        <div className="dashboard-card p-6">
+        <div className="dashboard-card p-6 animate-fade-in">
           <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
             Coming Soon
           </h2>

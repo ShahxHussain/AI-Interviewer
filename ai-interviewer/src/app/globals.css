@@ -1,26 +1,348 @@
 @import 'tailwindcss';
 
+/* Luxury Gold Theme CSS Variables */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Primary Gold Colors */
+  --gold-50: #fffbeb;
+  --gold-100: #fef3c7;
+  --gold-200: #fde68a;
+  --gold-300: #fcd34d;
+  --gold-400: #fbbf24;
+  --gold-500: #f59e0b;
+  --gold-600: #d97706;
+  --gold-700: #b45309;
+  --gold-800: #92400e;
+  --gold-900: #78350f;
+
+  /* Dark Luxury Colors */
+  --dark-900: #0f0f0f;
+  --dark-800: #1a1a1a;
+  --dark-700: #2d2d2d;
+  --dark-600: #404040;
+  --dark-500: #525252;
+  --dark-400: #737373;
+  --dark-300: #a3a3a3;
+  --dark-200: #d4d4d4;
+  --dark-100: #f5f5f5;
+
+  /* Accent Colors */
+  --accent-emerald: #10b981;
+  --accent-ruby: #ef4444;
+  --accent-sapphire: #3b82f6;
+  --accent-pearl: #f8fafc;
+
+  /* Gradients */
+  --gradient-gold: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+  --gradient-dark: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #2d2d2d 100%);
+  --gradient-luxury: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 30%, #fbbf24 100%);
+
+  /* Shadows */
+  --shadow-gold: 0 4px 20px rgba(251, 191, 36, 0.3);
+  --shadow-dark: 0 4px 20px rgba(0, 0, 0, 0.5);
+  --shadow-luxury: 0 8px 32px rgba(251, 191, 36, 0.2), 0 2px 8px rgba(0, 0, 0, 0.3);
+
+  /* Typography */
+  --font-luxury: 'Inter', 'Playfair Display', serif;
+  --font-body: 'Inter', sans-serif;
+
+  /* Legacy variables for compatibility */
+  --background: var(--dark-900);
+  --foreground: var(--dark-100);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--dark-900);
+  --color-foreground: var(--dark-100);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-playfair);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Global Luxury Styles */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--gradient-dark);
+  color: var(--dark-100);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.luxury-container {
+  background: var(--gradient-dark);
+  min-height: 100vh;
+  color: var(--dark-100);
+}
+
+.luxury-card {
+  background: rgba(26, 26, 26, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: 16px;
+  box-shadow: var(--shadow-luxury);
+}
+
+.luxury-button-primary {
+  background: var(--gradient-gold);
+  color: var(--dark-900);
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-gold);
+}
+
+.luxury-button-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(251, 191, 36, 0.4);
+}
+
+.luxury-button-secondary {
+  background: transparent;
+  color: var(--gold-400);
+  border: 2px solid var(--gold-400);
+  font-weight: 500;
+  border-radius: 12px;
+  padding: 10px 22px;
+  transition: all 0.3s ease;
+}
+
+.luxury-button-secondary:hover {
+  background: var(--gold-400);
+  color: var(--dark-900);
+  transform: translateY(-1px);
+}
+
+.luxury-input {
+  background: rgba(45, 45, 45, 0.8);
+  border: 2px solid rgba(251, 191, 36, 0.3);
+  border-radius: 12px;
+  padding: 14px 16px;
+  color: var(--dark-100);
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.luxury-input:focus {
+  border-color: var(--gold-400);
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+  outline: none;
+}
+
+.luxury-input::placeholder {
+  color: var(--dark-400);
+}
+
+.luxury-select {
+  background: rgba(45, 45, 45, 0.8);
+  border: 2px solid rgba(251, 191, 36, 0.3);
+  border-radius: 12px;
+  padding: 14px 16px;
+  color: var(--dark-100);
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.luxury-select:focus {
+  border-color: var(--gold-400);
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+  outline: none;
+}
+
+.luxury-select option {
+  background: var(--dark-800);
+  color: var(--dark-100);
+}
+
+.luxury-text-gold {
+  background: var(--gradient-gold);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+.luxury-text-primary {
+  color: var(--dark-100);
+  font-weight: 500;
+}
+
+.luxury-text-secondary {
+  color: var(--dark-300);
+  font-weight: 400;
+}
+
+.luxury-badge {
+  background: rgba(251, 191, 36, 0.2);
+  color: var(--gold-300);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  border-radius: 8px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.luxury-progress {
+  background: rgba(45, 45, 45, 0.8);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.luxury-progress-bar {
+  background: var(--gradient-gold);
+  height: 8px;
+  border-radius: 8px;
+  transition: width 0.3s ease;
+}
+
+/* Animation Classes */
+.luxury-fade-in {
+  animation: luxuryFadeIn 0.6s ease-out;
+}
+
+.luxury-slide-up {
+  animation: luxurySlideUp 0.8s ease-out;
+}
+
+.luxury-glow {
+  animation: luxuryGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes luxuryFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes luxurySlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes luxuryGlow {
+  from {
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+  }
+  to {
+    box-shadow: 0 0 30px rgba(251, 191, 36, 0.6);
+  }
+}
+
+/* Modal Styles */
+.luxury-modal {
+  background: rgba(26, 26, 26, 0.98);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: 16px;
+  box-shadow: var(--shadow-luxury);
+  color: var(--dark-100);
+}
+
+.luxury-modal-overlay {
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+}
+
+.luxury-card-glass {
+  background: rgba(26, 26, 26, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: 16px;
+  box-shadow: var(--shadow-luxury);
+  color: var(--dark-100);
+}
+
+/* Ensure all text in modals is visible */
+.luxury-modal *,
+.luxury-card-glass * {
+  color: var(--dark-100);
+}
+
+.luxury-modal label,
+.luxury-card-glass label,
+.luxury-modal h1,
+.luxury-card-glass h1,
+.luxury-modal h2,
+.luxury-card-glass h2,
+.luxury-modal h3,
+.luxury-card-glass h3,
+.luxury-modal h4,
+.luxury-card-glass h4,
+.luxury-modal h5,
+.luxury-card-glass h5,
+.luxury-modal h6,
+.luxury-card-glass h6,
+.luxury-modal p,
+.luxury-card-glass p,
+.luxury-modal span,
+.luxury-card-glass span {
+  color: var(--dark-100) !important;
+}
+
+/* Input styles for modals */
+.luxury-modal input,
+.luxury-card-glass input,
+.luxury-modal textarea,
+.luxury-card-glass textarea,
+.luxury-modal select,
+.luxury-card-glass select {
+  background: rgba(45, 45, 45, 0.8);
+  border: 2px solid rgba(251, 191, 36, 0.3);
+  border-radius: 8px;
+  padding: 12px;
+  color: var(--dark-100);
+  font-size: 14px;
+}
+
+.luxury-modal input:focus,
+.luxury-card-glass input:focus,
+.luxury-modal textarea:focus,
+.luxury-card-glass textarea:focus,
+.luxury-modal select:focus,
+.luxury-card-glass select:focus {
+  border-color: var(--gold-400);
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+  outline: none;
+}
+
+.luxury-modal input::placeholder,
+.luxury-card-glass input::placeholder,
+.luxury-modal textarea::placeholder,
+.luxury-card-glass textarea::placeholder {
+  color: var(--dark-400);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .luxury-card {
+    margin: 16px;
+    border-radius: 12px;
+  }
+  
+  .luxury-button-primary,
+  .luxury-button-secondary {
+    width: 100%;
+    padding: 14px 24px;
+  }
 }

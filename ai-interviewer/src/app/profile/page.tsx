@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { ProfileSettings } from '@/components/profile/ProfileSettings';
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { ModernDashboardLayout } from '@/components/layout/ModernDashboardLayout';
 import {
   User,
   CandidateProfile as CandidateProfileType,
@@ -112,24 +112,30 @@ export default function ProfilePage() {
   }
 
   return (
-    <DashboardLayout>
-      <div className="py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">
-              Profile Settings
-            </h1>
-            <p className="mt-2 text-gray-600">
-              Manage your profile information and preferences
-            </p>
-          </div>
-
-          <ProfileSettings
-            user={userProfile}
-            onProfileUpdate={handleProfileUpdate}
-          />
+    <ModernDashboardLayout>
+      <div style={{ maxWidth: '1024px', margin: '0 auto' }}>
+        <div style={{ marginBottom: '32px' }}>
+          <h1 style={{ 
+            fontSize: '30px', 
+            fontWeight: 'bold', 
+            color: 'var(--text-primary)',
+            margin: '0 0 8px 0'
+          }}>
+            Profile Settings
+          </h1>
+          <p style={{ 
+            color: 'var(--text-secondary)',
+            margin: '0'
+          }}>
+            Manage your profile information and preferences
+          </p>
         </div>
+
+        <ProfileSettings
+          user={userProfile}
+          onProfileUpdate={handleProfileUpdate}
+        />
       </div>
-    </DashboardLayout>
+    </ModernDashboardLayout>
   );
 }
