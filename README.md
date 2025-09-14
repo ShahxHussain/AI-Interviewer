@@ -1,4 +1,4 @@
-![Code with Kiro Hackathon](https://drive.google.com/file/d/10gwI2ENYHhJD5gstxgdSa7YBf4vPFEzR/view?usp=sharing)
+[Code with Kiro Hackathon](https://drive.google.com/file/d/10gwI2ENYHhJD5gstxgdSa7YBf4vPFEzR/view?usp=sharing)
 # AI Interviewer & Recruitment Platform: 
 ### `Built with Kiro`
 
@@ -748,6 +748,60 @@ This project proves that **agentic development** is not just a concept—it's a 
 
 *"From idea to production in 5 days—no hardcoding, maximum intelligence, powered by Kiro."*
 
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+ and npm
+- MongoDB database
+- API keys for AI services:
+  - Together.ai API key
+  - Murf AI API key
+
+### Installation
+```bash
+# Clone the repository
+git clone <repository-url>
+cd ai-interviewer
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env.local
+# Edit .env.local with your API keys and database URL
+
+# Run the development server
+npm run dev
+```
+
+### Environment Variables
+```env
+# Database
+MONGODB_URI=mongodb://localhost:27017/ai-interviewer
+
+# AI Services
+TOGETHER_AI_API_KEY=your_together_ai_key
+MURF_AI_API_KEY=your_murf_ai_key
+
+# Authentication
+JWT_SECRET=your_jwt_secret
+NEXTAUTH_SECRET=your_nextauth_secret
+```
+
+### Available Scripts
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
+npm run lint         # Run ESLint
+npm run lint:fix     # Fix ESLint errors
+npm run format       # Format code with Prettier
+npm run type-check   # Run TypeScript type checking
+npm run cleanup      # Run data cleanup
+npm run cleanup:dry-run  # Test cleanup without changes
+```
 ---
 
 ## 🙏 Acknowledgments
