@@ -27,30 +27,13 @@ The Solution
 
 ## 🏗️ System Architecture
 
-### Frontend Stack
-- **Next.js 15** with App Router for modern React development
-- **React 19** with TypeScript for type-safe component development
-- **Tailwind CSS** for responsive, utility-first styling
-- **Radix UI** for accessible, unstyled UI components
-- **Lucide React** for consistent iconography
+| **Layer**          | **Technologies** |
+|--------------------|-----------------|
+| **Frontend**       | Next.js 15 (App Router), React 19 (TypeScript), Tailwind CSS, Radix UI, Lucide React |
+| **Backend**        | Next.js API Routes, MongoDB + Mongoose, JWT Auth (bcryptjs), RESTful APIs |
+| **AI/ML**          | Together.ai (Llama 3.3-70B), Murf AI (TTS), Face-api.js, TensorFlow.js |
+| **Database Schema**| Users (RBAC), Interview Sessions, Job Postings, Analytics |
 
-### Backend Stack
-- **Next.js API Routes** for serverless backend functionality
-- **MongoDB** with Mongoose ODM for data persistence
-- **JWT Authentication** with bcryptjs for secure user management
-- **RESTful API** design for scalable data operations
-
-### AI/ML Integration
-- **Together.ai** with Llama 3.3-70B for intelligent question generation
-- **Murf AI** for high-quality voice synthesis and text-to-speech
-- **Face-api.js** for real-time facial analysis and emotion detection
-- **TensorFlow.js** for machine learning model execution
-
-### Database Schema
-- **User Management**: Role-based authentication (candidates/recruiters)
-- **Interview Sessions**: Comprehensive session tracking with metrics
-- **Job Postings**: Full job management with application tracking
-- **Analytics**: Performance data and user insights
 
 ##  Core Features
 
