@@ -3,8 +3,10 @@
 # AI Interviewer & Recruitment Platform: 
 ### `Built with Kiro`
 
+<p>
+  AI Interviewer is a revolutionary AI-powered interview practice and recruitment platform that transforms how candidates prepare for interviews and how recruiters assess talent. Built with cutting-edge technologies and powered by multiple AI services, this platform provides realistic, personalized interview experiences with real-time analysis and comprehensive feedback.
+</p>
 
-AI Interviewer is a revolutionary AI-powered interview practice and recruitment platform that transforms how candidates prepare for interviews and how recruiters assess talent. Built with cutting-edge technologies and powered by multiple AI services, this platform provides realistic, personalized interview experiences with real-time analysis and comprehensive feedback.
 ---
 
 The Problem
@@ -299,6 +301,15 @@ Kiro's specs system ensured every feature was perfectly implemented:
 8. **Candidate Job Application Flow** - Job board and application system
 9. **Result Sharing and Communication** - Performance reports and messaging
 10. **Privacy and Role-Based Access Control** - Security and data protection
+
+#### ** 11-15: Advanced Features** (Incomplete)
+**Development Method**: Click "Start" → Kiro will generate:
+- Result sharing and communication
+- Privacy and security implementation
+- Testing and quality assurance
+- Performance optimization and deployment
+⚠️ **Status:** Incomplete  
+📌 **Reason:** Free credits were used up, and I only had one debit card which I was unable to use for purchasing additional credits after **September 1st**, leaving these phases unfinished.
 
 **Kiro's Role**: Each requirement was translated into production-ready code through intelligent automation.
 
