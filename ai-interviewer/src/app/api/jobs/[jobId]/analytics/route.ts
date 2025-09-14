@@ -1,17 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/mongodb';
+import connectDB from '@/lib/mongodb';
+import mongoose from 'mongoose';
 import { ObjectId } from 'mongodb';
 
-// GET /api/jobs/[jobId]/analytics - Get analytics data for a specific job
+// GET /api/jobs/[jobId]/analytics - Get detailed analytics for a specific job
 export async function GET(
   request: NextRequest,
   { params }: { params: { jobId: string } }
 ) {
   try {
-    const { db } = await connectToDatabase();
+    await connectDB();
+    const db = mongoose.connection.db;
     const { jobId } = params;
     const { searchParams } = new URL(request.url);
-    const timeRange = searchParams.get('timeRange') || '30'; // days
+    const timeRange = parseInt(searchParams.get('timeRange') || '30');
 
     if (!ObjectId.isValid(jobId)) {
       return NextResponse.json(
@@ -20,146 +22,184 @@ export async function GET(
       );
     }
 
-    // Get job details
-    const job = await db
-      .collection('jobPostings')
-      .findOne({ _id: new ObjectId(jobId) });
+    // Calculate date range
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(endDate.getDate() - timeRange);
 
-    if (!job) {
-      return NextResponse.json(
-        { success: false, error: 'Job not found' },
-        { status: 404 }
-      );
-    }
-
-    const timeRangeDate = new Date();
-    timeRangeDate.setDate(timeRangeDate.getDate() - parseInt(timeRange));
-
-    // Get applications data
+    // Get all applications for this job
     const applications = await db
       .collection('jobApplications')
       .find({ 
         jobPostingId: jobId,
-        appliedAt: { $gte: timeRangeDate }
+        appliedAt: { $gte: startDate, $lte: endDate }
       })
       .toArray();
 
-    // Calculate application metrics
-    const totalApplications = applications.length;
-    const applicationsByStatus = applications.reduce((acc, app) => {
-      acc[app.status] = (acc[app.status] || 0) + 1;
-      return acc;
-    }, {});
+    // Get interview sessions for these applications
+    const applicationIds = applications.map(app => app._id.toString());
+    const interviewSessions = await db
+      .collection('interviewSessions')
+      .find({ 
+        'configuration.jobPosting.id': jobId,
+        startedAt: { $gte: startDate, $lte: endDate }
+      })
+      .toArray();
 
-    // Calculate applications over time (daily)
-    const applicationsOverTime = [];
-    const days = parseInt(timeRange);
-    for (let i = days - 1; i >= 0; i--) {
+    // Calculate basic metrics
+    const totalApplications = applications.length;
+    
+    const statusBreakdown = {
+      applied: applications.filter(app => app.status === 'applied').length,
+      'interview-scheduled': applications.filter(app => app.status === 'interview-scheduled').length,
+      'interview-completed': applications.filter(app => app.status === 'interview-completed').length,
+      rejected: applications.filter(app => app.status === 'rejected').length,
+      hired: applications.filter(app => app.status === 'hired').length,
+    };
+
+    // Calculate time metrics
+    const hiredApplications = applications.filter(app => app.status === 'hired');
+    const rejectedApplications = applications.filter(app => app.status === 'rejected');
+
+    const averageTimeToHire = hiredApplications.length > 0 
+      ? hiredApplications.reduce((sum, app) => {
+          const hireTime = app.updatedAt || app.appliedAt;
+          const applyTime = app.appliedAt;
+          return sum + (new Date(hireTime).getTime() - new Date(applyTime).getTime()) / (1000 * 60 * 60 * 24);
+        }, 0) / hiredApplications.length
+      : 0;
+
+    const averageTimeToReject = rejectedApplications.length > 0
+      ? rejectedApplications.reduce((sum, app) => {
+          const rejectTime = app.updatedAt || app.appliedAt;
+          const applyTime = app.appliedAt;
+          return sum + (new Date(rejectTime).getTime() - new Date(applyTime).getTime()) / (1000 * 60 * 60 * 24);
+        }, 0) / rejectedApplications.length
+      : 0;
+
+    // Calculate conversion rates
+    const interviewedCount = statusBreakdown['interview-scheduled'] + statusBreakdown['interview-completed'];
+    const hiredCount = statusBreakdown.hired;
+
+    const conversionRates = {
+      applicationToInterview: totalApplications > 0 ? interviewedCount / totalApplications : 0,
+      interviewToHire: interviewedCount > 0 ? hiredCount / interviewedCount : 0,
+      overallHireRate: totalApplications > 0 ? hiredCount / totalApplications : 0,
+    };
+
+    // Calculate application trends (daily data)
+    const applicationTrends = [];
+    for (let i = Math.min(timeRange - 1, 13); i >= 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i);
-      date.setHours(0, 0, 0, 0);
-      
-      const nextDate = new Date(date);
-      nextDate.setDate(nextDate.getDate() + 1);
-      
-      const count = applications.filter(app => {
-        const appDate = new Date(app.appliedAt);
-        return appDate >= date && appDate < nextDate;
+      const dayStart = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      const dayEnd = new Date(dayStart);
+      dayEnd.setDate(dayEnd.getDate() + 1);
+
+      const dayApplications = applications.filter(app => 
+        app.appliedAt >= dayStart && app.appliedAt < dayEnd
+      ).length;
+
+      const dayInterviews = applications.filter(app => 
+        app.status === 'interview-scheduled' || app.status === 'interview-completed'
+      ).filter(app => {
+        const statusChangeDate = app.updatedAt || app.appliedAt;
+        return statusChangeDate >= dayStart && statusChangeDate < dayEnd;
       }).length;
-      
-      applicationsOverTime.push({
-        date: date.toISOString().split('T')[0],
-        applications: count,
+
+      const dayHires = applications.filter(app => 
+        app.status === 'hired'
+      ).filter(app => {
+        const hireDate = app.updatedAt || app.appliedAt;
+        return hireDate >= dayStart && hireDate < dayEnd;
+      }).length;
+
+      applicationTrends.push({
+        date: dayStart.toISOString().split('T')[0],
+        applications: dayApplications,
+        interviews: dayInterviews,
+        hires: dayHires,
       });
     }
 
-    // Get interview completion rate
-    const interviewScheduled = applicationsByStatus['interview-scheduled'] || 0;
-    const interviewCompleted = applicationsByStatus['interview-completed'] || 0;
-    const hired = applicationsByStatus['hired'] || 0;
-    const rejected = applicationsByStatus['rejected'] || 0;
-
-    const interviewCompletionRate = interviewScheduled > 0 
-      ? ((interviewCompleted + hired + rejected) / (interviewScheduled + interviewCompleted + hired + rejected)) * 100
-      : 0;
-
-    const hireRate = totalApplications > 0 
-      ? (hired / totalApplications) * 100
-      : 0;
-
-    // Get top skills from applications (based on candidate profiles)
-    const candidateIds = applications.map(app => new ObjectId(app.candidateId));
+    // Get candidate skills from user profiles
+    const candidateIds = applications.map(app => app.candidateId);
     const candidates = await db
       .collection('users')
-      .find({ _id: { $in: candidateIds } })
+      .find({ _id: { $in: candidateIds.map(id => new ObjectId(id)) } })
       .toArray();
 
-    const skillsCount = {};
+    // Calculate top candidate skills
+    const skillCounts = new Map<string, { count: number; hired: number }>();
+    
     candidates.forEach(candidate => {
-      if (candidate.profile?.skills) {
-        candidate.profile.skills.forEach(skill => {
-          skillsCount[skill] = (skillsCount[skill] || 0) + 1;
-        });
-      }
+      const application = applications.find(app => app.candidateId === candidate._id.toString());
+      const isHired = application?.status === 'hired';
+      
+      candidate.profile?.skills?.forEach((skill: string) => {
+        const current = skillCounts.get(skill) || { count: 0, hired: 0 };
+        current.count += 1;
+        if (isHired) current.hired += 1;
+        skillCounts.set(skill, current);
+      });
     });
 
-    const topSkills = Object.entries(skillsCount)
-      .sort(([,a], [,b]) => b - a)
-      .slice(0, 10)
-      .map(([skill, count]) => ({ skill, count }));
+    const topCandidateSkills = Array.from(skillCounts.entries())
+      .map(([skill, counts]) => ({
+        skill,
+        count: counts.count,
+        hireRate: counts.count > 0 ? counts.hired / counts.count : 0,
+      }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
 
-    // Calculate average time to hire
-    const hiredApplications = applications.filter(app => app.status === 'hired');
-    const averageTimeToHire = hiredApplications.length > 0
-      ? hiredApplications.reduce((sum, app) => {
-          const timeToHire = new Date(app.updatedAt).getTime() - new Date(app.appliedAt).getTime();
-          return sum + timeToHire;
-        }, 0) / hiredApplications.length / (1000 * 60 * 60 * 24) // Convert to days
+    // Calculate interview performance
+    const completedInterviews = interviewSessions.filter(session => 
+      session.status === 'completed' && session.feedback?.overallScore
+    );
+
+    const averageScore = completedInterviews.length > 0
+      ? completedInterviews.reduce((sum, session) => sum + session.feedback.overallScore, 0) / completedInterviews.length
       : 0;
 
-    // Get recent activity
-    const recentActivity = applications
-      .sort((a, b) => new Date(b.updatedAt || b.appliedAt).getTime() - new Date(a.updatedAt || a.appliedAt).getTime())
-      .slice(0, 10)
-      .map(app => {
-        const candidate = candidates.find(c => c._id.toString() === app.candidateId);
-        return {
-          id: app._id.toString(),
-          candidateName: candidate 
-            ? `${candidate.profile.firstName} ${candidate.profile.lastName}`
-            : 'Unknown Candidate',
-          action: app.status,
-          timestamp: app.updatedAt || app.appliedAt,
-        };
-      });
+    // Score distribution
+    const scoreRanges = [
+      { range: '0-2', min: 0, max: 2 },
+      { range: '2-4', min: 2, max: 4 },
+      { range: '4-6', min: 4, max: 6 },
+      { range: '6-8', min: 6, max: 8 },
+      { range: '8-10', min: 8, max: 10 },
+    ];
 
-    const analytics = {
-      jobTitle: job.title,
-      totalViews: job.viewsCount || 0,
+    const scoreDistribution = scoreRanges.map(range => ({
+      range: range.range,
+      count: completedInterviews.filter(session => 
+        session.feedback.overallScore >= range.min && session.feedback.overallScore < range.max
+      ).length,
+    }));
+
+    const metrics = {
       totalApplications,
-      applicationsByStatus,
-      applicationsOverTime,
-      interviewCompletionRate: Math.round(interviewCompletionRate * 100) / 100,
-      hireRate: Math.round(hireRate * 100) / 100,
-      averageTimeToHire: Math.round(averageTimeToHire * 100) / 100,
-      topSkills,
-      recentActivity,
-      conversionFunnel: {
-        views: job.viewsCount || 0,
-        applications: totalApplications,
-        interviews: (applicationsByStatus['interview-scheduled'] || 0) + (applicationsByStatus['interview-completed'] || 0) + hired + rejected,
-        hired: hired,
+      statusBreakdown,
+      averageTimeToHire,
+      averageTimeToReject,
+      conversionRates,
+      applicationTrends,
+      topCandidateSkills,
+      interviewPerformance: {
+        averageScore,
+        scoreDistribution,
       },
     };
 
     return NextResponse.json({
       success: true,
-      analytics,
+      metrics,
     });
   } catch (error) {
     console.error('Error fetching job analytics:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch analytics' },
+      { success: false, error: 'Failed to fetch job analytics' },
       { status: 500 }
     );
   }

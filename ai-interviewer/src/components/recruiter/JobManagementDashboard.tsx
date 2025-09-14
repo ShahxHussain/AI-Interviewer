@@ -28,6 +28,8 @@ import JobPostingForm from './JobPostingForm';
 import CandidateApplicationTracker from './CandidateApplicationTracker';
 import JobAnalytics from './JobAnalytics';
 import JobStatusManager from './JobStatusManager';
+import JobStatusNotifications from './JobStatusNotifications';
+import JobPerformanceTracker from './JobPerformanceTracker';
 
 interface JobManagementDashboardProps {
   recruiterId: string;
@@ -52,6 +54,7 @@ export default function JobManagementDashboard({ recruiterId }: JobManagementDas
   const [showApplicationsModal, setShowApplicationsModal] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [showStatusManager, setShowStatusManager] = useState(false);
+  const [showPerformanceTracker, setShowPerformanceTracker] = useState(false);
 
   // Fetch jobs on component mount
   useEffect(() => {
@@ -309,6 +312,13 @@ export default function JobManagementDashboard({ recruiterId }: JobManagementDas
         <div className="flex gap-2">
           <Button 
             variant="outline" 
+            onClick={() => setShowPerformanceTracker(!showPerformanceTracker)}
+          >
+            <TrendingUp className="h-4 w-4 mr-2" />
+            {showPerformanceTracker ? 'Hide Performance' : 'Performance Tracker'}
+          </Button>
+          <Button 
+            variant="outline" 
             onClick={() => setShowAnalytics(!showAnalytics)}
           >
             <TrendingUp className="h-4 w-4 mr-2" />
@@ -327,6 +337,18 @@ export default function JobManagementDashboard({ recruiterId }: JobManagementDas
           </Button>
         </div>
       </div>
+
+      {/* Notifications Section */}
+      <div className="mb-6">
+        <JobStatusNotifications recruiterId={recruiterId} />
+      </div>
+
+      {/* Performance Tracker Section */}
+      {showPerformanceTracker && (
+        <div className="mb-6">
+          <JobPerformanceTracker recruiterId={recruiterId} />
+        </div>
+      )}
 
       {/* Analytics Section */}
       {showAnalytics && (

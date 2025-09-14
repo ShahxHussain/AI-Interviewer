@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/mongodb';
+import connectDB from '@/lib/mongodb';
+import mongoose from 'mongoose';
 import { ObjectId } from 'mongodb';
 
 // GET /api/analytics/recruiter/[recruiterId] - Get comprehensive analytics for a recruiter
@@ -8,7 +9,8 @@ export async function GET(
   { params }: { params: { recruiterId: string } }
 ) {
   try {
-    const { db } = await connectToDatabase();
+    await connectDB();
+    const db = mongoose.connection.db;
     const { recruiterId } = params;
     const { searchParams } = new URL(request.url);
     const timeRange = parseInt(searchParams.get('timeRange') || '30');

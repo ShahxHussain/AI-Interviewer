@@ -20,9 +20,11 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
-  Download
+  Download,
+  BarChart3
 } from 'lucide-react';
 import { JobApplication, JobPosting, InterviewSession } from '@/types';
+import ApplicationAnalytics from './ApplicationAnalytics';
 
 interface CandidateApplicationTrackerProps {
   jobId: string;
@@ -48,6 +50,7 @@ export default function CandidateApplicationTracker({
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedApplication, setSelectedApplication] = useState<ApplicationWithDetails | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
 
   useEffect(() => {
     fetchApplications();
@@ -180,10 +183,26 @@ export default function CandidateApplicationTracker({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h2 className="text-xl font-semibold mb-2">Applications for {jobTitle}</h2>
-        <p className="text-gray-600">Track and manage candidate applications</p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-xl font-semibold mb-2">Applications for {jobTitle}</h2>
+          <p className="text-gray-600">Track and manage candidate applications</p>
+        </div>
+        <Button
+          variant="outline"
+          onClick={() => setShowAnalytics(!showAnalytics)}
+        >
+          <BarChart3 className="h-4 w-4 mr-2" />
+          {showAnalytics ? 'Hide Analytics' : 'Show Analytics'}
+        </Button>
       </div>
+
+      {/* Analytics Section */}
+      {showAnalytics && (
+        <div className="mb-6">
+          <ApplicationAnalytics jobId={jobId} jobTitle={jobTitle} />
+        </div>
+      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
