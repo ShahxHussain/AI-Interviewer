@@ -1,4 +1,5 @@
-[Code with Kiro Hackathon](https://drive.google.com/file/d/10gwI2ENYHhJD5gstxgdSa7YBf4vPFEzR/view?usp=sharing)
+![Code with Kiro Hackathon](https://drive.google.com/uc?export=view&id=10gwI2ENYHhJD5gstxgdSa7YBf4vPFEzR)
+
 # AI Interviewer & Recruitment Platform: 
 ### `Built with Kiro`
 
