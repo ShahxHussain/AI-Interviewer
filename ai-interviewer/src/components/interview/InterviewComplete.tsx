@@ -62,200 +62,200 @@ export function InterviewComplete({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen luxury-container py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle className="h-10 w-10 text-green-600" />
+          <div className="w-20 h-20 bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-yellow-400/30">
+            <CheckCircle className="h-10 w-10 text-yellow-400" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold luxury-text-gold mb-2">
             Interview Completed!
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg luxury-text-secondary">
             Great job! Here&apos;s your detailed performance analysis.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Overall Score */}
-          <Card>
-            <CardHeader className="text-center">
-              <CardTitle className="text-lg">Overall Score</CardTitle>
-            </CardHeader>
-            <CardContent className="text-center">
+          <div className="luxury-card p-6">
+            <div className="text-center">
+              <h3 className="text-lg font-bold luxury-text-gold mb-4">Overall Score</h3>
               <div
-                className={`text-4xl font-bold rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-2 ${getScoreColor(session.feedback.overallScore)}`}
+                className={`text-4xl font-bold rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-2 ${
+                  session.feedback.overallScore >= 8 
+                    ? 'bg-gradient-to-r from-green-400/20 to-green-600/20 text-green-400 border border-green-400/30' 
+                    : session.feedback.overallScore >= 6 
+                    ? 'bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 text-yellow-400 border border-yellow-400/30'
+                    : 'bg-gradient-to-r from-red-400/20 to-red-600/20 text-red-400 border border-red-400/30'
+                }`}
               >
                 {session.feedback.overallScore.toFixed(1)}
               </div>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm luxury-text-secondary">
                 {getPerformanceLevel(session.feedback.overallScore)}
               </p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Duration */}
-          <Card>
-            <CardHeader className="text-center">
-              <CardTitle className="text-lg flex items-center justify-center gap-2">
+          <div className="luxury-card p-6">
+            <div className="text-center">
+              <h3 className="text-lg font-bold luxury-text-gold mb-4 flex items-center justify-center gap-2">
                 <Clock className="h-5 w-5" />
                 Duration
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-center">
-              <div className="text-3xl font-bold text-blue-600 mb-2">
+              </h3>
+              <div className="text-3xl font-bold text-blue-400 mb-2">
                 {formatDuration(session.startedAt, session.completedAt)}
               </div>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm luxury-text-secondary">
                 {session.questions.length} questions answered
               </p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Questions Completed */}
-          <Card>
-            <CardHeader className="text-center">
-              <CardTitle className="text-lg flex items-center justify-center gap-2">
+          <div className="luxury-card p-6">
+            <div className="text-center">
+              <h3 className="text-lg font-bold luxury-text-gold mb-4 flex items-center justify-center gap-2">
                 <MessageSquare className="h-5 w-5" />
                 Completion
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-center">
-              <div className="text-3xl font-bold text-purple-600 mb-2">
+              </h3>
+              <div className="text-3xl font-bold text-purple-400 mb-2">
                 {session.responses.length}/{session.questions.length}
               </div>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm luxury-text-secondary">
                 {Math.round(
                   (session.responses.length / session.questions.length) * 100
                 )}
                 % completed
               </p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* Detailed Metrics */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Performance Metrics */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+          <div className="luxury-card p-6">
+            <div className="mb-4">
+              <h3 className="text-lg font-bold luxury-text-gold flex items-center gap-2">
                 <TrendingUp className="h-5 w-5" />
                 Performance Metrics
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+              </h3>
+            </div>
+            <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Eye Contact</span>
+                <span className="text-sm font-medium luxury-text-primary">Eye Contact</span>
                 <div className="flex items-center gap-2">
-                  <div className="w-24 bg-gray-200 rounded-full h-2">
+                  <div className="w-24 bg-gray-700 rounded-full h-2">
                     <div
-                      className="bg-blue-600 h-2 rounded-full"
+                      className="bg-gradient-to-r from-blue-400 to-blue-600 h-2 rounded-full"
                       style={{
                         width: `${session.metrics.eyeContactPercentage}%`,
                       }}
                     ></div>
                   </div>
-                  <span className="text-sm text-gray-600">
+                  <span className="text-sm luxury-text-secondary">
                     {session.metrics.eyeContactPercentage}%
                   </span>
                 </div>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Confidence</span>
+                <span className="text-sm font-medium luxury-text-primary">Confidence</span>
                 <div className="flex items-center gap-2">
-                  <div className="w-24 bg-gray-200 rounded-full h-2">
+                  <div className="w-24 bg-gray-700 rounded-full h-2">
                     <div
-                      className="bg-green-600 h-2 rounded-full"
+                      className="bg-gradient-to-r from-green-400 to-green-600 h-2 rounded-full"
                       style={{
                         width: `${session.metrics.averageConfidence * 100}%`,
                       }}
                     ></div>
                   </div>
-                  <span className="text-sm text-gray-600">
+                  <span className="text-sm luxury-text-secondary">
                     {Math.round(session.metrics.averageConfidence * 100)}%
                   </span>
                 </div>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Response Quality</span>
+                <span className="text-sm font-medium luxury-text-primary">Response Quality</span>
                 <div className="flex items-center gap-2">
-                  <div className="w-24 bg-gray-200 rounded-full h-2">
+                  <div className="w-24 bg-gray-700 rounded-full h-2">
                     <div
-                      className="bg-purple-600 h-2 rounded-full"
+                      className="bg-gradient-to-r from-purple-400 to-purple-600 h-2 rounded-full"
                       style={{
                         width: `${session.metrics.responseQuality * 100}%`,
                       }}
                     ></div>
                   </div>
-                  <span className="text-sm text-gray-600">
+                  <span className="text-sm luxury-text-secondary">
                     {Math.round(session.metrics.responseQuality * 100)}%
                   </span>
                 </div>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Overall Engagement</span>
+                <span className="text-sm font-medium luxury-text-primary">Overall Engagement</span>
                 <div className="flex items-center gap-2">
-                  <div className="w-24 bg-gray-200 rounded-full h-2">
+                  <div className="w-24 bg-gray-700 rounded-full h-2">
                     <div
-                      className="bg-orange-600 h-2 rounded-full"
+                      className="bg-gradient-to-r from-orange-400 to-orange-600 h-2 rounded-full"
                       style={{
                         width: `${session.metrics.overallEngagement * 100}%`,
                       }}
                     ></div>
                   </div>
-                  <span className="text-sm text-gray-600">
+                  <span className="text-sm luxury-text-secondary">
                     {Math.round(session.metrics.overallEngagement * 100)}%
                   </span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Interview Configuration */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Interview Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
+          <div className="luxury-card p-6">
+            <div className="mb-4">
+              <h3 className="text-lg font-bold luxury-text-gold">Interview Details</h3>
+            </div>
+            <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Interviewer Type</span>
-                <Badge variant="secondary" className="capitalize">
+                <span className="text-sm font-medium luxury-text-primary">Interviewer Type</span>
+                <span className="px-2 py-1 rounded-full bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 text-yellow-400 border border-yellow-400/30 text-xs font-medium capitalize">
                   {session.configuration.interviewer.replace('-', ' ')}
-                </Badge>
+                </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Interview Type</span>
-                <Badge variant="secondary" className="capitalize">
+                <span className="text-sm font-medium luxury-text-primary">Interview Type</span>
+                <span className="px-2 py-1 rounded-full bg-gradient-to-r from-green-400/20 to-green-600/20 text-green-400 border border-green-400/30 text-xs font-medium capitalize">
                   {session.configuration.type}
-                </Badge>
+                </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Difficulty Level</span>
-                <Badge variant="secondary" className="capitalize">
+                <span className="text-sm font-medium luxury-text-primary">Difficulty Level</span>
+                <span className="px-2 py-1 rounded-full bg-gradient-to-r from-blue-400/20 to-blue-600/20 text-blue-400 border border-blue-400/30 text-xs font-medium capitalize">
                   {session.configuration.settings.difficulty}
-                </Badge>
+                </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Topic Focus</span>
-                <Badge variant="secondary" className="capitalize">
+                <span className="text-sm font-medium luxury-text-primary">Topic Focus</span>
+                <span className="px-2 py-1 rounded-full bg-gradient-to-r from-purple-400/20 to-purple-600/20 text-purple-400 border border-purple-400/30 text-xs font-medium capitalize">
                   {session.configuration.settings.topicFocus === 'dsa'
                     ? 'DSA'
                     : session.configuration.settings.topicFocus}
-                </Badge>
+                </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Purpose</span>
-                <Badge variant="secondary" className="capitalize">
+                <span className="text-sm font-medium luxury-text-primary">Purpose</span>
+                <span className="px-2 py-1 rounded-full bg-gradient-to-r from-orange-400/20 to-orange-600/20 text-orange-400 border border-orange-400/30 text-xs font-medium capitalize">
                   {session.configuration.settings.purpose}
-                </Badge>
+                </span>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* Feedback Section */}
@@ -322,36 +322,34 @@ export function InterviewComplete({
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Button
-            variant="outline"
+          <button
             onClick={onDownloadReport}
-            className="flex items-center gap-2"
+            className="luxury-button-secondary flex items-center gap-2"
           >
             <Download className="h-4 w-4" />
             Download Report
-          </Button>
+          </button>
 
-          <Button variant="outline" className="flex items-center gap-2">
+          <button className="luxury-button-secondary flex items-center gap-2">
             <Share2 className="h-4 w-4" />
             Share Results
-          </Button>
+          </button>
 
-          <Button
+          <button
             onClick={onRetakeInterview}
-            className="flex items-center gap-2"
+            className="luxury-button-primary flex items-center gap-2"
           >
             <RotateCcw className="h-4 w-4" />
             Retake Interview
-          </Button>
+          </button>
 
-          <Button
-            variant="outline"
+          <button
             onClick={onBackToHome}
-            className="flex items-center gap-2"
+            className="luxury-button-secondary flex items-center gap-2"
           >
             <Home className="h-4 w-4" />
             Back to Dashboard
-          </Button>
+          </button>
         </div>
       </div>
     </div>

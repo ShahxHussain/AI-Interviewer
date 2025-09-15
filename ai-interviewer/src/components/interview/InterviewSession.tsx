@@ -1,15 +1,15 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Button } from '@/components/ui/Button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+} from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
 import { Progress } from '@/components/ui/progress';
 import {
   Play,
@@ -41,6 +41,7 @@ import {
 import { useQuestionGeneration } from '@/hooks/useQuestionGeneration';
 import { useInterviewSession } from '@/hooks/useInterviewSession';
 import { useMetricsCollection } from '@/hooks/useMetricsCollection';
+import { useFacialAnalysis } from '@/hooks/useFacialAnalysis';
 import { VoicePlayer } from './VoicePlayer';
 import { AudioRecorder } from './AudioRecorder';
 import { CameraFeed } from './CameraFeed';
@@ -76,6 +77,7 @@ export function InterviewSession({
   const [currentResponse, setCurrentResponse] = useState('');
   const [sessionId, setSessionId] = useState<string>('');
   const [showMetrics, setShowMetrics] = useState(false);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const [pausedTime, setPausedTime] = useState(0);
 
   const {
@@ -95,6 +97,25 @@ export function InterviewSession({
     pauseSession: pauseInterviewSession,
     resumeSession: resumeInterviewSession,
   } = useInterviewSession();
+
+  // Facial analysis
+  const {
+    isInitialized: isFacialAnalysisReady,
+    isAnalyzing: isFacialAnalysisRunning,
+    isLoading: isFacialAnalysisLoading,
+    error: facialAnalysisError,
+    initialize: initializeFacialAnalysis,
+    startAnalysis: startFacialAnalysis,
+    stopAnalysis: stopFacialAnalysis,
+    currentAnalysis,
+    metrics: facialMetrics,
+  } = useFacialAnalysis({
+    analysisInterval: 1000,
+    autoStart: false,
+    onError: (error) => {
+      console.error('Facial analysis error:', error);
+    },
+  });
 
   // Metrics collection
   const {
@@ -163,6 +184,49 @@ export function InterviewSession({
       // Continue with local session even if database fails
     }
   }, [config, createSession, startMetricsCollection]);
+
+  // Initialize facial analysis service when component mounts
+  useEffect(() => {
+    if (!isFacialAnalysisReady && !isFacialAnalysisLoading && !facialAnalysisError) {
+      console.log('InterviewSession: Initializing facial analysis service');
+      initializeFacialAnalysis();
+    }
+  }, [isFacialAnalysisReady, isFacialAnalysisLoading, facialAnalysisError, initializeFacialAnalysis]);
+
+  // Start facial analysis when video element is available and session is in progress
+  useEffect(() => {
+    console.log('InterviewSession: Facial analysis effect triggered:', {
+      sessionState,
+      hasVideoElement: !!videoRef.current,
+      isFacialAnalysisReady,
+      isFacialAnalysisRunning
+    });
+    
+    if (sessionState === 'in-progress' && videoRef.current && isFacialAnalysisReady && !isFacialAnalysisRunning) {
+      console.log('Starting facial analysis on video element');
+      startFacialAnalysis(videoRef.current);
+    }
+  }, [sessionState, isFacialAnalysisReady, isFacialAnalysisRunning, startFacialAnalysis]);
+
+  // Stop facial analysis when session is not in progress
+  useEffect(() => {
+    if (sessionState !== 'in-progress' && isFacialAnalysisRunning) {
+      console.log('Stopping facial analysis');
+      stopFacialAnalysis();
+    }
+  }, [sessionState, isFacialAnalysisRunning, stopFacialAnalysis]);
+
+  // Send facial analysis data to metrics collection
+  useEffect(() => {
+    if (currentAnalysis && isMetricsCollecting) {
+      console.log('InterviewSession: Sending facial analysis data to metrics collection:', {
+        eyeContact: currentAnalysis.eyeContact,
+        confidence: currentAnalysis.confidence,
+        emotions: currentAnalysis.emotions
+      });
+      addFacialData(currentAnalysis);
+    }
+  }, [currentAnalysis, isMetricsCollecting, addFacialData]);
 
   const pauseSession = useCallback(async () => {
     try {
@@ -292,6 +356,29 @@ export function InterviewSession({
         }
       }
 
+      // Create final response if there's current response text
+      const finalResponse = currentResponse.trim() ? {
+        questionId: questions[currentQuestionIndex]?.id || '',
+        transcription: currentResponse,
+        duration: 0,
+        confidence: 0.7,
+        facialMetrics: {
+          emotions: {
+            neutral: 0.8,
+            happy: 0.1,
+            sad: 0.05,
+            angry: 0.02,
+            fearful: 0.01,
+            disgusted: 0.01,
+            surprised: 0.01,
+          },
+          eyeContact: true,
+          headPose: { pitch: 0, yaw: 0, roll: 0 },
+          confidence: 0.7,
+          timestamp: Date.now(),
+        },
+      } : null;
+
       // Generate comprehensive feedback using AI
       const comprehensiveFeedback = await import('@/lib/services/feedback-service')
         .then(module => module.FeedbackService.generateComprehensiveFeedback({
@@ -299,7 +386,7 @@ export function InterviewSession({
           candidateId: 'current-user',
           configuration: config,
           questions,
-          responses: [...responses, ...(currentResponse.trim() ? [response] : [])],
+          responses: [...responses, ...(finalResponse ? [finalResponse] : [])],
           metrics: finalMetrics,
           feedback: {
             strengths: [],
@@ -327,7 +414,7 @@ export function InterviewSession({
         candidateId: 'current-user', // This should come from auth context
         configuration: config,
         questions,
-        responses: [...responses, ...(currentResponse.trim() ? [response] : [])],
+        responses: [...responses, ...(finalResponse ? [finalResponse] : [])],
         metrics: finalMetrics,
         feedback: {
           strengths: comprehensiveFeedback.strengths,
@@ -414,7 +501,10 @@ export function InterviewSession({
   }, [startResponse, endResponse]);
 
   const toggleCamera = useCallback(() => {
-    setIsCameraOn(prev => !prev);
+    setIsCameraOn(prev => {
+      console.log('InterviewSession: Camera toggled from', prev, 'to', !prev);
+      return !prev;
+    });
   }, []);
 
   const toggleMic = useCallback(() => {
@@ -486,62 +576,62 @@ export function InterviewSession({
   // Render ready state
   if (sessionState === 'ready') {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="w-full max-w-2xl">
-          <CardHeader className="text-center">
-            <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-            <CardTitle className="text-2xl">Interview Ready!</CardTitle>
-            <CardDescription>
+      <div className="min-h-screen luxury-container flex items-center justify-center p-6">
+        <div className="w-full max-w-2xl luxury-card p-8">
+          <div className="text-center mb-6">
+            <CheckCircle className="h-16 w-16 text-yellow-400 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold luxury-text-gold mb-2">Interview Ready!</h2>
+            <p className="luxury-text-secondary">
               We&apos;ve generated {questions.length} personalized questions for
               your {config.type} interview.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
+            </p>
+          </div>
+          <div className="space-y-6">
             {/* Interview Preview */}
-            <div className="bg-gray-50 rounded-lg p-4">
-              <h3 className="font-semibold mb-3">Interview Overview</h3>
+            <div className="rounded-xl p-4 bg-gradient-to-r from-yellow-400/5 to-yellow-600/5 border border-yellow-400/20">
+              <h3 className="font-bold luxury-text-gold mb-3">Interview Overview</h3>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="font-medium">Interviewer:</span>
-                  <span className="ml-2 capitalize">
+                  <span className="font-medium luxury-text-primary">Interviewer:</span>
+                  <span className="ml-2 capitalize px-2 py-1 rounded-full bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 text-yellow-400 border border-yellow-400/30">
                     {config.interviewer.replace('-', ' ')}
                   </span>
                 </div>
                 <div>
-                  <span className="font-medium">Type:</span>
-                  <span className="ml-2 capitalize">{config.type}</span>
+                  <span className="font-medium luxury-text-primary">Type:</span>
+                  <span className="ml-2 capitalize px-2 py-1 rounded-full bg-gradient-to-r from-green-400/20 to-green-600/20 text-green-400 border border-green-400/30">{config.type}</span>
                 </div>
                 <div>
-                  <span className="font-medium">Difficulty:</span>
-                  <span className="ml-2 capitalize">
+                  <span className="font-medium luxury-text-primary">Difficulty:</span>
+                  <span className="ml-2 capitalize px-2 py-1 rounded-full bg-gradient-to-r from-blue-400/20 to-blue-600/20 text-blue-400 border border-blue-400/30">
                     {config.settings.difficulty}
                   </span>
                 </div>
                 <div>
-                  <span className="font-medium">Questions:</span>
-                  <span className="ml-2">{questions.length}</span>
+                  <span className="font-medium luxury-text-primary">Questions:</span>
+                  <span className="ml-2 px-2 py-1 rounded-full bg-gradient-to-r from-purple-400/20 to-purple-600/20 text-purple-400 border border-purple-400/30">{questions.length}</span>
                 </div>
               </div>
             </div>
 
             {/* Controls Check */}
-            <div className="bg-blue-50 rounded-lg p-4">
-              <h3 className="font-semibold mb-3 text-blue-900">
+            <div className="rounded-xl p-4 bg-gradient-to-r from-blue-400/5 to-blue-600/5 border border-blue-400/20">
+              <h3 className="font-bold mb-3 luxury-text-gold">
                 Before You Start
               </h3>
-              <div className="space-y-2 text-sm text-blue-800">
+              <div className="space-y-2 text-sm luxury-text-secondary">
                 <div className="flex items-center gap-2">
-                  <Camera className="h-4 w-4" />
+                  <Camera className="h-4 w-4 text-blue-400" />
                   <span>
                     Make sure your camera is working and positioned well
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Mic className="h-4 w-4" />
+                  <Mic className="h-4 w-4 text-blue-400" />
                   <span>Test your microphone and speak clearly</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Volume2 className="h-4 w-4" />
+                  <Volume2 className="h-4 w-4 text-blue-400" />
                   <span>Ensure your speakers/headphones are working</span>
                 </div>
               </div>
@@ -549,15 +639,21 @@ export function InterviewSession({
 
             {/* Action Buttons */}
             <div className="flex items-center justify-between">
-              <Button variant="outline" onClick={onExit}>
+              <button
+                onClick={onExit}
+                className="luxury-button-secondary"
+              >
                 Back to Setup
-              </Button>
-              <Button onClick={startSession} className="px-8">
+              </button>
+              <button
+                onClick={startSession}
+                className="luxury-button-primary px-8"
+              >
                 Start Interview
-              </Button>
+              </button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     );
   }
@@ -567,16 +663,18 @@ export function InterviewSession({
   const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen luxury-container text-white">
       {/* Header */}
-      <div className="bg-gray-800 border-b border-gray-700 px-6 py-4">
+      <div className="bg-gradient-to-r from-gray-800 to-gray-900 border-b border-yellow-400/30 px-6 py-4 backdrop-blur-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Badge variant="secondary">
-              Question {currentQuestionIndex + 1} of {questions.length}
-            </Badge>
-            <div className="flex items-center space-x-2 text-sm text-gray-300">
-              <Clock className="h-4 w-4" />
+            <div className="px-3 py-1 rounded-full bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 border border-yellow-400/30">
+              <span className="text-sm font-medium text-yellow-400">
+                Question {currentQuestionIndex + 1} of {questions.length}
+              </span>
+            </div>
+            <div className="flex items-center space-x-2 text-sm luxury-text-secondary">
+              <Clock className="h-4 w-4 text-yellow-400" />
               <span>Session: {formatTime(getElapsedTime())}</span>
               <span>•</span>
               <span>Question: {formatTime(getQuestionTime())}</span>
@@ -584,20 +682,26 @@ export function InterviewSession({
           </div>
 
           <div className="flex items-center space-x-2">
-            <Button
-              variant={sessionState === 'paused' ? 'default' : 'outline'}
-              size="sm"
+            <button
               onClick={sessionState === 'paused' ? resumeSession : pauseSession}
+              className={`px-3 py-1 rounded-lg text-sm font-medium transition-all duration-300 ${
+                sessionState === 'paused' 
+                  ? 'luxury-button-primary' 
+                  : 'luxury-button-secondary'
+              }`}
             >
               {sessionState === 'paused' ? (
                 <Play className="h-4 w-4" />
               ) : (
                 <Pause className="h-4 w-4" />
               )}
-            </Button>
-            <Button variant="outline" size="sm" onClick={onExit}>
+            </button>
+            <button 
+              onClick={onExit}
+              className="luxury-button-secondary px-3 py-1 rounded-lg text-sm font-medium"
+            >
               <Square className="h-4 w-4" />
-            </Button>
+            </button>
           </div>
         </div>
 
@@ -605,7 +709,7 @@ export function InterviewSession({
         <div className="mt-4">
           <div className="w-full bg-gray-700 rounded-full h-2">
             <div
-              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+              className="bg-gradient-to-r from-yellow-400 to-yellow-600 h-2 rounded-full transition-all duration-300 shadow-lg shadow-yellow-400/20"
               style={{ width: `${progress}%` }}
             ></div>
           </div>
@@ -616,7 +720,7 @@ export function InterviewSession({
         {/* Main Content */}
         <div className="flex-1 flex flex-col">
           {/* Video/Camera Area */}
-          <div className="flex-1 bg-gray-800 relative">
+          <div className="flex-1 bg-gradient-to-br from-gray-800 to-gray-900 relative">
             <CameraFeed
               isEnabled={isCameraOn}
               className="w-full h-full"
@@ -624,20 +728,46 @@ export function InterviewSession({
                 console.error('Camera error:', error);
                 // Optionally show error to user or handle gracefully
               }}
+              onVideoReady={(videoElement) => {
+                console.log('CameraFeed: Video element ready for facial analysis');
+                videoRef.current = videoElement;
+              }}
             />
+            {/* Debug info */}
+            <div className="absolute top-4 right-4 text-xs text-white bg-black bg-opacity-50 px-2 py-1 rounded">
+              <div>Camera: {isCameraOn ? 'ON' : 'OFF'}</div>
+              <div>Facial: {isFacialAnalysisRunning ? 'RUNNING' : isFacialAnalysisLoading ? 'LOADING' : 'STOPPED'}</div>
+              <div>Facial Ready: {isFacialAnalysisReady ? 'YES' : 'NO'}</div>
+              <div>Metrics: {isMetricsCollecting ? 'COLLECTING' : 'STOPPED'}</div>
+              {facialAnalysisError && <div className="text-red-400">Error: {facialAnalysisError}</div>}
+              <div className="mt-2">
+                <button
+                  onClick={() => {
+                    console.log('Manual facial analysis start triggered');
+                    if (videoRef.current && isFacialAnalysisReady) {
+                      startFacialAnalysis(videoRef.current);
+                    }
+                  }}
+                  className="bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded text-xs"
+                  disabled={!isFacialAnalysisReady || !videoRef.current}
+                >
+                  Start Facial Analysis
+                </button>
+              </div>
+            </div>
 
             {/* Real-time Feedback Indicators */}
             <div className="absolute top-4 left-4 space-y-2">
               {/* Session Status */}
-              <div className="bg-black bg-opacity-70 rounded-lg px-3 py-2">
+              <div className="bg-gradient-to-r from-gray-900/80 to-gray-800/80 backdrop-blur-sm rounded-lg px-3 py-2 border border-yellow-400/20">
                 <div className="flex items-center gap-2 text-sm">
                   <div
                     className={`h-2 w-2 rounded-full ${
                       sessionState === 'in-progress'
-                        ? 'bg-green-500 animate-pulse'
+                        ? 'bg-green-400 animate-pulse'
                         : sessionState === 'paused'
-                        ? 'bg-yellow-500'
-                        : 'bg-gray-500'
+                        ? 'bg-yellow-400'
+                        : 'bg-gray-400'
                     }`}
                   />
                   <span className="text-white capitalize">
@@ -648,9 +778,9 @@ export function InterviewSession({
 
               {/* Metrics Collection Status */}
               {isMetricsCollecting && (
-                <div className="bg-black bg-opacity-70 rounded-lg px-3 py-2">
+                <div className="bg-gradient-to-r from-gray-900/80 to-gray-800/80 backdrop-blur-sm rounded-lg px-3 py-2 border border-yellow-400/20">
                   <div className="flex items-center gap-2 text-sm text-white">
-                    <Activity className="h-3 w-3 text-blue-400 animate-pulse" />
+                    <Activity className="h-3 w-3 text-yellow-400 animate-pulse" />
                     <span>Analyzing</span>
                   </div>
                 </div>
@@ -658,7 +788,7 @@ export function InterviewSession({
 
               {/* Real-time Metrics Display */}
               {isMetricsCollecting && (
-                <div className="bg-black bg-opacity-70 rounded-lg px-3 py-2 space-y-1">
+                <div className="bg-gradient-to-r from-gray-900/80 to-gray-800/80 backdrop-blur-sm rounded-lg px-3 py-2 space-y-1 border border-yellow-400/20">
                   <div className="flex items-center gap-2 text-xs text-white">
                     <Eye className="h-3 w-3 text-green-400" />
                     <span>Eye Contact: {getRealTimeMetrics().eyeContactPercentage}%</span>
@@ -673,39 +803,42 @@ export function InterviewSession({
 
             {/* Session Controls Toggle */}
             <div className="absolute top-4 right-4">
-              <Button
-                variant="outline"
-                size="sm"
+              <button
                 onClick={() => setShowMetrics(!showMetrics)}
-                className="bg-black bg-opacity-50 border-gray-600 text-white hover:bg-black hover:bg-opacity-70"
+                className="bg-gradient-to-r from-gray-900/80 to-gray-800/80 backdrop-blur-sm border border-yellow-400/20 text-white hover:bg-gradient-to-r hover:from-yellow-400/10 hover:to-yellow-600/10 px-3 py-2 rounded-lg transition-all duration-300"
               >
                 <BarChart3 className="h-4 w-4" />
-              </Button>
+              </button>
             </div>
 
             {/* Pause Overlay */}
             {sessionState === 'paused' && (
               <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                <div className="bg-gray-800 rounded-lg p-6 text-center">
-                  <Pause className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-white mb-2">Interview Paused</h3>
-                  <p className="text-gray-300 mb-4">Click resume to continue</p>
-                  <Button onClick={resumeSession} className="bg-green-600 hover:bg-green-700">
+                <div className="luxury-card p-6 text-center">
+                  <Pause className="h-12 w-12 text-yellow-400 mx-auto mb-4" />
+                  <h3 className="text-xl font-bold luxury-text-gold mb-2">Interview Paused</h3>
+                  <p className="luxury-text-secondary mb-4">Click resume to continue</p>
+                  <button 
+                    onClick={resumeSession} 
+                    className="luxury-button-primary px-6 py-2 rounded-lg"
+                  >
                     <Play className="h-4 w-4 mr-2" />
                     Resume Interview
-                  </Button>
+                  </button>
                 </div>
               </div>
             )}
 
             {/* Controls Overlay */}
             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
-              <div className="flex items-center space-x-4 bg-black bg-opacity-50 rounded-full px-6 py-3">
-                <Button
-                  variant={isMicOn ? 'default' : 'destructive'}
-                  size="sm"
+              <div className="flex items-center space-x-4 bg-gradient-to-r from-gray-900/80 to-gray-800/80 backdrop-blur-sm rounded-full px-6 py-3 border border-yellow-400/20">
+                <button
                   onClick={toggleMic}
-                  className="rounded-full"
+                  className={`rounded-full p-2 transition-all duration-300 ${
+                    isMicOn 
+                      ? 'bg-gradient-to-r from-green-400/20 to-green-600/20 text-green-400 border border-green-400/30' 
+                      : 'bg-gradient-to-r from-red-400/20 to-red-600/20 text-red-400 border border-red-400/30'
+                  }`}
                   disabled={sessionState === 'paused'}
                 >
                   {isMicOn ? (
@@ -713,12 +846,14 @@ export function InterviewSession({
                   ) : (
                     <MicOff className="h-4 w-4" />
                   )}
-                </Button>
-                <Button
-                  variant={isCameraOn ? 'default' : 'destructive'}
-                  size="sm"
+                </button>
+                <button
                   onClick={toggleCamera}
-                  className="rounded-full"
+                  className={`rounded-full p-2 transition-all duration-300 ${
+                    isCameraOn 
+                      ? 'bg-gradient-to-r from-green-400/20 to-green-600/20 text-green-400 border border-green-400/30' 
+                      : 'bg-gradient-to-r from-red-400/20 to-red-600/20 text-red-400 border border-red-400/30'
+                  }`}
                   disabled={sessionState === 'paused'}
                 >
                   {isCameraOn ? (
@@ -726,32 +861,36 @@ export function InterviewSession({
                   ) : (
                     <CameraOff className="h-4 w-4" />
                   )}
-                </Button>
-                <Button
-                  variant={isSpeakerOn ? 'default' : 'destructive'}
-                  size="sm"
+                </button>
+                <button
                   onClick={toggleSpeaker}
-                  className="rounded-full"
+                  className={`rounded-full p-2 transition-all duration-300 ${
+                    isSpeakerOn 
+                      ? 'bg-gradient-to-r from-green-400/20 to-green-600/20 text-green-400 border border-green-400/30' 
+                      : 'bg-gradient-to-r from-red-400/20 to-red-600/20 text-red-400 border border-red-400/30'
+                  }`}
                 >
                   {isSpeakerOn ? (
                     <Volume2 className="h-4 w-4" />
                   ) : (
                     <VolumeX className="h-4 w-4" />
                   )}
-                </Button>
-                <Button
-                  variant={isRecording ? 'destructive' : 'outline'}
-                  size="sm"
+                </button>
+                <button
                   onClick={toggleRecording}
-                  className="rounded-full"
+                  className={`rounded-full p-2 transition-all duration-300 ${
+                    isRecording 
+                      ? 'bg-gradient-to-r from-red-400/20 to-red-600/20 text-red-400 border border-red-400/30' 
+                      : 'bg-gradient-to-r from-gray-400/20 to-gray-600/20 text-gray-400 border border-gray-400/30'
+                  }`}
                   disabled={sessionState === 'paused'}
                 >
                   <div
                     className={`h-3 w-3 rounded-full ${
-                      isRecording ? 'bg-white animate-pulse' : 'bg-red-500'
+                      isRecording ? 'bg-red-400 animate-pulse' : 'bg-gray-400'
                     }`}
                   />
-                </Button>
+                </button>
               </div>
             </div>
           </div>
@@ -759,18 +898,19 @@ export function InterviewSession({
 
         {/* Metrics Panel (Optional) */}
         {showMetrics && (
-          <div className="w-80 bg-gray-800 border-l border-gray-700">
-            <div className="p-4 border-b border-gray-700">
+          <div className="w-80 bg-gradient-to-br from-gray-800 to-gray-900 border-l border-yellow-400/30">
+            <div className="p-4 border-b border-yellow-400/30">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">Real-time Metrics</h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
+                <h3 className="text-lg font-bold luxury-text-gold flex items-center gap-2">
+                  <BarChart3 className="h-5 w-5" />
+                  Real-time Metrics
+                </h3>
+                <button
                   onClick={() => setShowMetrics(false)}
-                  className="text-gray-400 hover:text-white"
+                  className="text-gray-400 hover:text-yellow-400 transition-colors duration-300"
                 >
                   ×
-                </Button>
+                </button>
               </div>
             </div>
             <div className="p-4">
@@ -783,48 +923,58 @@ export function InterviewSession({
         )}
 
         {/* Question Panel */}
-        <div className="w-96 bg-gray-800 border-l border-gray-700 flex flex-col">
-          <div className="p-6 border-b border-gray-700">
+        <div className="w-96 bg-gradient-to-br from-gray-800 to-gray-900 border-l border-yellow-400/30 flex flex-col">
+          <div className="p-6 border-b border-yellow-400/30">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold">Current Question</h2>
-              <Badge
-                className={`${
+              <h2 className="text-lg font-bold luxury-text-gold">Current Question</h2>
+              <div
+                className={`px-3 py-1 rounded-full text-xs font-medium ${
                   currentQuestion?.difficulty <= 3
-                    ? 'bg-green-600'
+                    ? 'bg-gradient-to-r from-green-400/20 to-green-600/20 text-green-400 border border-green-400/30'
                     : currentQuestion?.difficulty <= 7
-                      ? 'bg-yellow-600'
-                      : 'bg-red-600'
+                      ? 'bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 text-yellow-400 border border-yellow-400/30'
+                      : 'bg-gradient-to-r from-red-400/20 to-red-600/20 text-red-400 border border-red-400/30'
                 }`}
               >
-                Difficulty: {currentQuestion?.difficulty}/10
-              </Badge>
+                DIFFICULTY: {currentQuestion?.difficulty}/10
+              </div>
             </div>
 
             <div className="space-y-4">
               {/* Voice Player for Current Question */}
               {currentQuestion && isSpeakerOn && (
-                <VoicePlayer
-                  interviewer={config.interviewer}
-                  text={currentQuestion.text}
-                  autoPlay={true}
-                  showText={false}
-                  className="bg-gray-700 border-gray-600"
-                  onPlayStart={() => console.log('Question audio started')}
-                  onPlayEnd={() => console.log('Question audio ended')}
-                  onError={error =>
-                    console.error('Voice synthesis error:', error)
-                  }
-                />
+                <div className="bg-gradient-to-r from-gray-700/50 to-gray-800/50 border border-yellow-400/20 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="px-2 py-1 rounded-full bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 text-yellow-400 border border-yellow-400/30 text-xs font-medium">
+                      Voice Playback
+                    </div>
+                    <div className="px-2 py-1 rounded-full bg-gradient-to-r from-blue-400/20 to-blue-600/20 text-blue-400 border border-blue-400/30 text-xs font-medium">
+                      Recruiter
+                    </div>
+                  </div>
+                  <VoicePlayer
+                    interviewer={config.interviewer}
+                    text={currentQuestion.text}
+                    autoPlay={true}
+                    showText={false}
+                    className="bg-transparent border-none"
+                    onPlayStart={() => console.log('Question audio started')}
+                    onPlayEnd={() => console.log('Question audio ended')}
+                    onError={error =>
+                      console.error('Voice synthesis error:', error)
+                    }
+                  />
+                </div>
               )}
 
-              <p className="text-gray-100 leading-relaxed">
+              <p className="luxury-text-primary leading-relaxed">
                 {currentQuestion?.text}
               </p>
 
               {currentQuestion?.followUpQuestions &&
                 currentQuestion.followUpQuestions.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-medium text-gray-300 mb-2">
+                    <h4 className="text-sm font-bold luxury-text-gold mb-2">
                       Follow-up Questions:
                     </h4>
                     <ul className="space-y-1">
@@ -832,7 +982,7 @@ export function InterviewSession({
                         (followUp, idx) => (
                           <li
                             key={idx}
-                            className="text-sm text-gray-400 pl-4 border-l-2 border-gray-600"
+                            className="text-sm luxury-text-secondary pl-4 border-l-2 border-yellow-400/30"
                           >
                             {followUp}
                           </li>
@@ -846,70 +996,79 @@ export function InterviewSession({
 
           {/* Response Area */}
           <div className="flex-1 p-6 space-y-4">
-            <h3 className="text-sm font-medium text-gray-300 mb-3">
+            <h3 className="text-sm font-bold luxury-text-gold mb-3">
               Your Response
             </h3>
 
             {/* Audio Recorder */}
-            <AudioRecorder
-              onRecordingComplete={(audioBlob, duration) => {
-                console.log('Recording completed:', {
-                  duration,
-                  size: audioBlob.size,
-                });
-                // Here you would typically upload the audio or process it
-                setCurrentResponse(
-                  `[Audio Response - ${Math.round(duration)}s]`
-                );
-              }}
-              onError={error => {
-                console.error('Recording error:', error);
-              }}
-              maxDuration={300} // 5 minutes
-              className="bg-gray-700 border-gray-600"
-              disabled={sessionState === 'paused'}
-            />
+            <div className="bg-gradient-to-r from-gray-700/50 to-gray-800/50 border border-yellow-400/20 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="px-2 py-1 rounded-full bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 text-yellow-400 border border-yellow-400/30 text-xs font-medium">
+                  Voice Response
+                </div>
+              </div>
+              <AudioRecorder
+                onRecordingComplete={(audioBlob, duration) => {
+                  console.log('Recording completed:', {
+                    duration,
+                    size: audioBlob.size,
+                  });
+                  // Here you would typically upload the audio or process it
+                  setCurrentResponse(
+                    `[Audio Response - ${Math.round(duration)}s]`
+                  );
+                }}
+                onError={error => {
+                  console.error('Recording error:', error);
+                }}
+                maxDuration={300} // 5 minutes
+                className="bg-transparent border-none"
+                disabled={sessionState === 'paused'}
+              />
+            </div>
 
             {/* Text Response (Alternative) */}
             <div className="space-y-2">
-              <label className="text-xs text-gray-400">
+              <label className="text-xs luxury-text-secondary">
                 Or type your response:
               </label>
               <textarea
                 value={currentResponse}
                 onChange={e => setCurrentResponse(e.target.value)}
                 placeholder="Type your response here..."
-                className="w-full h-20 bg-gray-700 border border-gray-600 rounded-lg p-3 text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                className="w-full h-20 bg-gradient-to-r from-gray-700/50 to-gray-800/50 border border-yellow-400/20 rounded-lg p-3 luxury-text-primary placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-yellow-400/50 text-sm"
               />
             </div>
 
-            <div className="text-xs text-gray-400">
+            <div className="text-xs luxury-text-secondary">
               Expected duration: ~
               {Math.round(currentQuestion?.expectedDuration / 60)} minutes
             </div>
           </div>
 
           {/* Navigation */}
-          <div className="p-6 border-t border-gray-700">
+          <div className="p-6 border-t border-yellow-400/30">
             <div className="flex items-center justify-between">
-              <Button
-                variant="outline"
-                size="sm"
+              <button
                 onClick={previousQuestion}
                 disabled={currentQuestionIndex === 0}
+                className="luxury-button-secondary px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Previous
-              </Button>
+              </button>
 
-              <Button onClick={nextQuestion} size="sm">
+              <button 
+                onClick={nextQuestion} 
+                className="luxury-button-primary px-4 py-2 rounded-lg text-sm font-medium"
+              >
                 {currentQuestionIndex === questions.length - 1
                   ? 'Finish'
                   : 'Next'}
                 {currentQuestionIndex < questions.length - 1 && (
                   <ArrowRight className="h-4 w-4 ml-2" />
                 )}
-              </Button>
+              </button>
             </div>
           </div>
         </div>

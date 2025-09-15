@@ -35,9 +35,15 @@ export function Navigation({
 
   const candidateNavItems = [
     {
+      href: '/landing',
+      label: 'Home',
+      icon: Home,
+      description: 'Return to landing page',
+    },
+    {
       href: '/dashboard',
       label: 'Dashboard',
-      icon: Home,
+      icon: BarChart3,
       description: 'Overview and quick actions',
     },
     {
@@ -68,9 +74,15 @@ export function Navigation({
 
   const recruiterNavItems = [
     {
+      href: '/landing',
+      label: 'Home',
+      icon: Home,
+      description: 'Return to landing page',
+    },
+    {
       href: '/recruiter/dashboard',
       label: 'Dashboard',
-      icon: Home,
+      icon: BarChart3,
       description: 'Overview and analytics',
     },
     {

@@ -145,17 +145,17 @@ export function ComprehensiveFeedbackComponent({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen luxury-container py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle className="h-10 w-10 text-green-600" />
+          <div className="w-20 h-20 bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-yellow-400/30">
+            <CheckCircle className="h-10 w-10 text-yellow-400" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold luxury-text-gold mb-2">
             Interview Analysis Complete!
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg luxury-text-secondary">
             Here&apos;s your comprehensive AI-powered performance analysis.
           </p>
         </div>

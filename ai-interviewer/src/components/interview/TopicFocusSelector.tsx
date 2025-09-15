@@ -179,10 +179,10 @@ export function TopicFocusSelector({
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+        <h3 className="text-lg font-bold luxury-text-gold mb-2">
           Topic Focus
         </h3>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm luxury-text-secondary">
           Select the primary focus area for your interview questions
         </p>
       </div>
@@ -198,63 +198,79 @@ export function TopicFocusSelector({
             <button
               key={option.focus}
               onClick={() => onSelect(option.focus)}
-              className={`relative p-5 rounded-xl border-2 text-left transition-all duration-200 hover:shadow-md ${
+              className={`relative p-5 rounded-xl border-2 text-left transition-all duration-300 hover:scale-105 ${
                 isSelected
-                  ? `${colors.selectedBg} ${colors.selectedBorder} shadow-md`
-                  : `${colors.bg} ${colors.border} hover:${colors.selectedBorder}`
+                  ? 'bg-gradient-to-r from-yellow-400/10 to-yellow-600/10 border-yellow-400/40 shadow-lg shadow-yellow-400/20'
+                  : 'bg-gradient-to-r from-gray-800/50 to-gray-900/50 border-gray-600/30 hover:border-yellow-400/40 hover:bg-gradient-to-r hover:from-yellow-400/5 hover:to-yellow-600/5'
               }`}
             >
               {/* Selection indicator */}
               {isSelected && (
                 <div className="absolute top-4 right-4">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <CheckCircle className="h-5 w-5 text-yellow-400" />
                 </div>
               )}
 
               {/* Icon and Title */}
               <div className="flex items-start space-x-3 mb-3">
-                <div className={`p-2.5 rounded-lg ${colors.bg} flex-shrink-0`}>
+                <div className={`p-2.5 rounded-lg ${
+                  isSelected 
+                    ? 'bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 border border-yellow-400/30' 
+                    : 'bg-gradient-to-r from-gray-700/50 to-gray-800/50 border border-gray-600/30'
+                } flex-shrink-0`}>
                   <Icon
-                    className={`h-5 w-5 ${isSelected ? colors.selectedIcon : colors.icon}`}
+                    className={`h-5 w-5 ${
+                      isSelected ? 'text-yellow-400' : 'text-gray-400'
+                    }`}
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className={`font-semibold ${colors.text} mb-1`}>
+                  <h4 className={`font-bold ${
+                    isSelected ? 'luxury-text-gold' : 'luxury-text-primary'
+                  } mb-1`}>
                     {option.name}
                   </h4>
-                  <p className={`text-xs ${colors.accent} font-medium`}>
+                  <p className={`text-xs ${
+                    isSelected ? 'text-yellow-400' : 'luxury-text-secondary'
+                  } font-medium`}>
                     {option.difficulty}
                   </p>
                 </div>
               </div>
 
               {/* Description */}
-              <p className="text-sm text-gray-600 mb-4 leading-relaxed">
+              <p className="text-sm luxury-text-secondary mb-4 leading-relaxed">
                 {option.description}
               </p>
 
               {/* Time Allocation */}
               <div
-                className={`p-2.5 rounded-lg ${colors.bg} border ${colors.border} mb-4`}
+                className={`p-2.5 rounded-lg ${
+                  isSelected 
+                    ? 'bg-gradient-to-r from-yellow-400/10 to-yellow-600/10 border border-yellow-400/30' 
+                    : 'bg-gradient-to-r from-gray-700/30 to-gray-800/30 border border-gray-600/30'
+                } mb-4`}
               >
-                <p className="text-xs font-medium text-gray-700 mb-1">
+                <p className="text-xs font-medium luxury-text-primary mb-1">
                   Time Allocation:
                 </p>
-                <p className="text-xs text-gray-600">{option.timeAllocation}</p>
+                <p className="text-xs luxury-text-secondary">{option.timeAllocation}</p>
               </div>
 
               {/* Topics */}
               <div>
-                <p className="text-xs font-medium text-gray-700 mb-2">
+                <p className="text-xs font-medium luxury-text-primary mb-2">
                   Key Topics:
                 </p>
                 <div className="grid grid-cols-2 gap-1">
                   {option.topics.slice(0, 6).map((topic, index) => (
                     <div key={index} className="flex items-center space-x-1.5">
                       <div
-                        className={`w-1 h-1 rounded-full ${colors.bg}`}
+                        className={`w-1 h-1 rounded-full ${
+                          isSelected ? 'bg-yellow-400' : 'bg-gray-400'
+                        }`}
                       ></div>
-                      <span className="text-xs text-gray-600 truncate">
+                      <span className="text-xs luxury-text-secondary truncate">
                         {topic}
                       </span>
                     </div>

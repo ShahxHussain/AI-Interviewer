@@ -86,8 +86,9 @@ export function ModernDashboardLayout({ children }: DashboardLayoutProps) {
           display: 'flex', 
           flexDirection: 'column', 
           height: '100%',
-          backgroundColor: 'var(--bg-card)',
-          borderRight: '1px solid var(--border-light)'
+          background: 'var(--gradient-dark)',
+          borderRight: '1px solid rgba(251, 191, 36, 0.2)',
+          backdropFilter: 'blur(20px)'
         }}>
           {/* Logo */}
           <div style={{ 
@@ -96,7 +97,7 @@ export function ModernDashboardLayout({ children }: DashboardLayoutProps) {
             alignItems: 'center', 
             justifyContent: 'space-between', 
             padding: '0 24px',
-            borderBottom: '1px solid var(--border-light)'
+            borderBottom: '1px solid rgba(251, 191, 36, 0.2)'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{ 
@@ -106,12 +107,21 @@ export function ModernDashboardLayout({ children }: DashboardLayoutProps) {
                 display: 'flex', 
                 alignItems: 'center', 
                 justifyContent: 'center',
-                background: 'var(--gradient-primary)'
+                background: 'var(--gradient-gold)',
+                boxShadow: 'var(--shadow-gold)'
               }}>
-                <Zap style={{ width: '20px', height: '20px', color: 'var(--text-white)' }} />
+                <Zap style={{ width: '20px', height: '20px', color: 'var(--dark-900)' }} />
               </div>
               <div>
-                <h1 style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--text-primary)', margin: '0' }}>AI Interviewer</h1>
+                <h1 style={{ 
+                  fontSize: '18px', 
+                  fontWeight: 'bold', 
+                  background: 'var(--gradient-gold)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  margin: '0' 
+                }}>AI Interviewer</h1>
               </div>
             </div>
             <button
@@ -121,7 +131,7 @@ export function ModernDashboardLayout({ children }: DashboardLayoutProps) {
                 borderRadius: '6px', 
                 border: 'none',
                 backgroundColor: 'transparent',
-                color: 'var(--text-secondary)',
+                color: 'var(--gold-400)',
                 cursor: 'pointer',
                 display: 'none'
               }}
@@ -134,7 +144,7 @@ export function ModernDashboardLayout({ children }: DashboardLayoutProps) {
           {/* User Profile */}
           <div style={{ 
             padding: '16px 24px',
-            borderBottom: '1px solid var(--border-light)'
+            borderBottom: '1px solid rgba(251, 191, 36, 0.2)'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{ 
@@ -144,21 +154,22 @@ export function ModernDashboardLayout({ children }: DashboardLayoutProps) {
                 display: 'flex', 
                 alignItems: 'center', 
                 justifyContent: 'center',
-                background: 'var(--gradient-primary)'
+                background: 'var(--gradient-gold)',
+                boxShadow: 'var(--shadow-gold)'
               }}>
-                <span style={{ fontSize: '14px', fontWeight: 'bold', color: 'var(--text-white)' }}>
+                <span style={{ fontSize: '14px', fontWeight: 'bold', color: 'var(--dark-900)' }}>
                   {user?.firstName?.[0]}{user?.lastName?.[0]}
                 </span>
               </div>
               <div style={{ flex: '1', minWidth: '0' }}>
-                <p style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text-primary)', margin: '0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <p style={{ fontSize: '14px', fontWeight: '600', color: 'var(--dark-100)', margin: '0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {user?.firstName} {user?.lastName}
                 </p>
-                <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: '0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <p style={{ fontSize: '12px', color: 'var(--dark-300)', margin: '0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {user?.email}
                 </p>
               </div>
-              <ChevronDown style={{ width: '16px', height: '16px', color: 'var(--text-muted)' }} />
+              <ChevronDown style={{ width: '16px', height: '16px', color: 'var(--gold-400)' }} />
             </div>
           </div>
 
@@ -176,15 +187,31 @@ export function ModernDashboardLayout({ children }: DashboardLayoutProps) {
                     display: 'flex',
                     alignItems: 'center',
                     gap: '12px',
-                    padding: '8px 12px',
+                    padding: '12px 16px',
                     fontSize: '14px',
                     fontWeight: '500',
-                    borderRadius: '8px',
-                    transition: 'all 0.2s',
+                    borderRadius: '12px',
+                    transition: 'all 0.3s ease',
                     border: 'none',
                     cursor: 'pointer',
-                    backgroundColor: current ? 'var(--primary)' : 'transparent',
-                    color: current ? 'var(--text-white)' : 'var(--text-secondary)'
+                    backgroundColor: current 
+                      ? 'rgba(251, 191, 36, 0.15)' 
+                      : 'transparent',
+                    color: current ? 'var(--gold-400)' : 'var(--dark-300)',
+                    borderLeft: current ? '3px solid var(--gold-400)' : '3px solid transparent',
+                    boxShadow: current ? 'var(--shadow-gold)' : 'none'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!current) {
+                      e.currentTarget.style.backgroundColor = 'rgba(251, 191, 36, 0.05)';
+                      e.currentTarget.style.color = 'var(--gold-400)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!current) {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                      e.currentTarget.style.color = 'var(--dark-300)';
+                    }
                   }}
                 >
                   <Icon style={{ width: '20px', height: '20px' }} />
@@ -192,12 +219,13 @@ export function ModernDashboardLayout({ children }: DashboardLayoutProps) {
                   {item.badge && (
                     <span style={{
                       marginLeft: 'auto',
-                      padding: '2px 8px',
+                      padding: '4px 8px',
                       fontSize: '10px',
                       fontWeight: '600',
                       borderRadius: '12px',
-                      backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                      color: 'var(--primary)'
+                      background: 'var(--gradient-gold)',
+                      color: 'var(--dark-900)',
+                      boxShadow: 'var(--shadow-gold)'
                     }}>
                       {item.badge}
                     </span>
@@ -208,7 +236,7 @@ export function ModernDashboardLayout({ children }: DashboardLayoutProps) {
           </nav>
 
           {/* Footer */}
-          <div style={{ padding: '16px', borderTop: '1px solid var(--border-light)' }}>
+          <div style={{ padding: '16px', borderTop: '1px solid rgba(251, 191, 36, 0.2)' }}>
             <button
               onClick={handleLogout}
               style={{
@@ -216,15 +244,23 @@ export function ModernDashboardLayout({ children }: DashboardLayoutProps) {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '12px',
-                padding: '8px 12px',
+                padding: '12px 16px',
                 fontSize: '14px',
                 fontWeight: '500',
-                borderRadius: '8px',
-                transition: 'all 0.2s',
+                borderRadius: '12px',
+                transition: 'all 0.3s ease',
                 border: 'none',
                 cursor: 'pointer',
                 backgroundColor: 'transparent',
-                color: 'var(--error)'
+                color: 'var(--dark-300)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                e.currentTarget.style.color = 'var(--accent-ruby)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.color = 'var(--dark-300)';
               }}
             >
               <LogOut style={{ width: '20px', height: '20px' }} />
@@ -240,7 +276,8 @@ export function ModernDashboardLayout({ children }: DashboardLayoutProps) {
         marginLeft: '256px', // Always 256px margin to account for sidebar
         display: 'flex',
         flexDirection: 'column',
-        minHeight: '100vh'
+        minHeight: '100vh',
+        background: 'var(--gradient-dark)'
       }}>
         {/* Top bar */}
         <header style={{ 
@@ -248,8 +285,9 @@ export function ModernDashboardLayout({ children }: DashboardLayoutProps) {
           top: '0',
           zIndex: '30',
           height: '64px',
-          backgroundColor: 'var(--bg-card)',
-          borderBottom: '1px solid var(--border-light)'
+          background: 'var(--gradient-dark)',
+          borderBottom: '1px solid rgba(251, 191, 36, 0.2)',
+          backdropFilter: 'blur(20px)'
         }}>
           <div style={{ 
             display: 'flex', 
@@ -266,7 +304,7 @@ export function ModernDashboardLayout({ children }: DashboardLayoutProps) {
                   borderRadius: '6px',
                   border: 'none',
                   backgroundColor: 'transparent',
-                  color: 'var(--text-secondary)',
+                  color: 'var(--gold-400)',
                   cursor: 'pointer',
                   display: 'none'
                 }}
@@ -281,12 +319,13 @@ export function ModernDashboardLayout({ children }: DashboardLayoutProps) {
                 alignItems: 'center', 
                 gap: '8px', 
                 padding: '8px 12px', 
-                borderRadius: '8px', 
-                border: '1px solid var(--border-light)',
-                backgroundColor: 'var(--bg-secondary)',
+                borderRadius: '12px', 
+                border: '1px solid rgba(251, 191, 36, 0.3)',
+                background: 'rgba(45, 45, 45, 0.8)',
+                backdropFilter: 'blur(20px)',
                 minWidth: '320px'
               }} className="hidden md:flex">
-                <Search style={{ width: '16px', height: '16px', color: 'var(--text-muted)' }} />
+                <Search style={{ width: '16px', height: '16px', color: 'var(--gold-400)' }} />
                 <input
                   type="text"
                   placeholder="Search interviews, analytics..."
@@ -295,7 +334,7 @@ export function ModernDashboardLayout({ children }: DashboardLayoutProps) {
                     border: 'none',
                     outline: 'none',
                     flex: '1',
-                    color: 'var(--text-primary)'
+                    color: 'var(--dark-100)'
                   }}
                 />
               </div>
@@ -310,8 +349,15 @@ export function ModernDashboardLayout({ children }: DashboardLayoutProps) {
                   borderRadius: '8px',
                   border: 'none',
                   backgroundColor: 'transparent',
-                  color: 'var(--text-secondary)',
-                  cursor: 'pointer'
+                  color: 'var(--gold-400)',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(251, 191, 36, 0.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
                 }}
               >
                 {darkMode ? <Sun style={{ width: '20px', height: '20px' }} /> : <Moon style={{ width: '20px', height: '20px' }} />}
@@ -324,8 +370,15 @@ export function ModernDashboardLayout({ children }: DashboardLayoutProps) {
                 borderRadius: '8px',
                 border: 'none',
                 backgroundColor: 'transparent',
-                color: 'var(--text-secondary)',
-                cursor: 'pointer'
+                color: 'var(--gold-400)',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(251, 191, 36, 0.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
               }}>
                 <Bell style={{ width: '20px', height: '20px' }} />
                 <div style={{ 
@@ -338,9 +391,10 @@ export function ModernDashboardLayout({ children }: DashboardLayoutProps) {
                   display: 'flex', 
                   alignItems: 'center', 
                   justifyContent: 'center',
-                  backgroundColor: 'var(--error)'
+                  background: 'var(--gradient-gold)',
+                  boxShadow: 'var(--shadow-gold)'
                 }}>
-                  <span style={{ fontSize: '10px', fontWeight: 'bold', color: 'var(--text-white)' }}>2</span>
+                  <span style={{ fontSize: '10px', fontWeight: 'bold', color: 'var(--dark-900)' }}>2</span>
                 </div>
               </button>
 
@@ -353,9 +407,10 @@ export function ModernDashboardLayout({ children }: DashboardLayoutProps) {
                   display: 'flex', 
                   alignItems: 'center', 
                   justifyContent: 'center',
-                  background: 'var(--gradient-primary)'
+                  background: 'var(--gradient-gold)',
+                  boxShadow: 'var(--shadow-gold)'
                 }}>
-                  <span style={{ fontSize: '14px', fontWeight: 'bold', color: 'var(--text-white)' }}>
+                  <span style={{ fontSize: '14px', fontWeight: 'bold', color: 'var(--dark-900)' }}>
                     {user?.firstName?.[0]}
                   </span>
                 </div>

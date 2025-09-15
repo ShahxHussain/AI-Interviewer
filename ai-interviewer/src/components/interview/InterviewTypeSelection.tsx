@@ -93,10 +93,10 @@ export function InterviewTypeSelection({
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+        <h3 className="text-lg font-bold luxury-text-gold mb-2">
           Interview Type
         </h3>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm luxury-text-secondary">
           Choose the type of interview you want to practice
         </p>
       </div>
@@ -112,40 +112,48 @@ export function InterviewTypeSelection({
             <button
               key={interview.type}
               onClick={() => onSelect(interview.type)}
-              className={`relative p-6 rounded-xl border-2 text-left transition-all duration-200 hover:shadow-md ${
+              className={`relative p-6 rounded-xl border-2 text-left transition-all duration-300 hover:scale-105 ${
                 isSelected
-                  ? `${colors.selectedBg} ${colors.selectedBorder} shadow-md`
-                  : `${colors.bg} ${colors.border} hover:${colors.selectedBorder}`
+                  ? 'bg-gradient-to-r from-yellow-400/10 to-yellow-600/10 border-yellow-400/40 shadow-lg shadow-yellow-400/20'
+                  : 'bg-gradient-to-r from-gray-800/50 to-gray-900/50 border-gray-600/30 hover:border-yellow-400/40 hover:bg-gradient-to-r hover:from-yellow-400/5 hover:to-yellow-600/5'
               }`}
             >
               {/* Selection indicator */}
               {isSelected && (
                 <div className="absolute top-4 right-4">
-                  <CheckCircle className="h-6 w-6 text-green-600" />
+                  <CheckCircle className="h-6 w-6 text-yellow-400" />
                 </div>
               )}
 
               {/* Icon and Title */}
               <div className="flex items-center space-x-3 mb-3">
-                <div className={`p-3 rounded-lg ${colors.bg}`}>
+                <div className={`p-3 rounded-lg ${
+                  isSelected 
+                    ? 'bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 border border-yellow-400/30' 
+                    : 'bg-gradient-to-r from-gray-700/50 to-gray-800/50 border border-gray-600/30'
+                }`}>
                   <Icon
-                    className={`h-6 w-6 ${isSelected ? colors.selectedIcon : colors.icon}`}
+                    className={`h-6 w-6 ${
+                      isSelected ? 'text-yellow-400' : 'text-gray-400'
+                    }`}
                   />
                 </div>
                 <div className="flex-1">
-                  <h4 className={`font-semibold ${colors.text}`}>
+                  <h4 className={`font-bold ${
+                    isSelected ? 'luxury-text-gold' : 'luxury-text-primary'
+                  }`}>
                     {interview.name}
                   </h4>
                 </div>
               </div>
 
               {/* Description */}
-              <p className="text-sm text-gray-600 mb-4">
+              <p className="text-sm luxury-text-secondary mb-4">
                 {interview.description}
               </p>
 
               {/* Duration and Difficulty */}
-              <div className="flex items-center justify-between mb-4 text-xs text-gray-500">
+              <div className="flex items-center justify-between mb-4 text-xs luxury-text-secondary">
                 <div className="flex items-center space-x-1">
                   <Clock className="h-3 w-3" />
                   <span>{interview.duration}</span>
@@ -158,14 +166,18 @@ export function InterviewTypeSelection({
 
               {/* Focus Areas */}
               <div className="space-y-2">
-                <p className="text-xs font-medium text-gray-700">
+                <p className="text-xs font-medium luxury-text-primary">
                   Focus Areas:
                 </p>
                 <div className="flex flex-wrap gap-1">
                   {interview.focus.map(area => (
                     <span
                       key={area}
-                      className={`px-2 py-1 text-xs font-medium rounded-full ${colors.badge}`}
+                      className={`px-2 py-1 text-xs font-medium rounded-full ${
+                        isSelected
+                          ? 'bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 text-yellow-400 border border-yellow-400/30'
+                          : 'bg-gradient-to-r from-gray-700/30 to-gray-800/30 text-gray-300 border border-gray-600/30'
+                      }`}
                     >
                       {area}
                     </span>

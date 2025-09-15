@@ -18,7 +18,8 @@ export default function Home() {
           router.push('/dashboard');
         }
       } else {
-        router.push('/auth');
+        // Redirect to landing page instead of auth
+        router.push('/landing');
       }
     }
   }, [user, loading, router]);

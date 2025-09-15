@@ -156,19 +156,19 @@ export function CandidateProfile({
   const profileCompletion = calculateProfileCompletion();
 
   return (
-    <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-sm border border-gray-200">
-      <div className="px-6 py-4 border-b border-gray-200">
+    <div className="max-w-2xl mx-auto luxury-card">
+      <div className="px-6 py-4 border-b border-yellow-400/30">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <User className="h-6 w-6 text-blue-600" />
-            <h2 className="text-xl font-semibold text-gray-900">
+            <User className="h-6 w-6 text-yellow-400" />
+            <h2 className="text-xl font-bold luxury-text-gold">
               Candidate Profile
             </h2>
           </div>
           <div className="flex items-center space-x-3">
             <div className="text-right">
-              <p className="text-sm text-gray-600">Profile Completion</p>
-              <p className="text-lg font-semibold text-blue-600">
+              <p className="text-sm luxury-text-secondary">Profile Completion</p>
+              <p className="text-lg font-bold luxury-text-gold">
                 {profileCompletion}%
               </p>
             </div>
@@ -178,14 +178,14 @@ export function CandidateProfile({
                 viewBox="0 0 36 36"
               >
                 <path
-                  className="text-gray-200"
+                  className="text-gray-600"
                   stroke="currentColor"
                   strokeWidth="3"
                   fill="none"
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                 />
                 <path
-                  className="text-blue-600"
+                  className="text-yellow-400"
                   stroke="currentColor"
                   strokeWidth="3"
                   strokeDasharray={`${profileCompletion}, 100`}
@@ -195,7 +195,7 @@ export function CandidateProfile({
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <Award className="h-6 w-6 text-blue-600" />
+                <Award className="h-6 w-6 text-yellow-400" />
               </div>
             </div>
           </div>
@@ -224,7 +224,7 @@ export function CandidateProfile({
         {/* Basic Information */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium luxury-text-secondary mb-2">
               First Name *
             </label>
             <input
@@ -232,15 +232,15 @@ export function CandidateProfile({
               value={formData.firstName}
               onChange={e => handleInputChange('firstName', e.target.value)}
               onBlur={() => handleBlur('firstName')}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+              className={`luxury-input w-full ${
                 isFieldInvalid('firstName')
-                  ? 'border-red-300 bg-red-50'
-                  : 'border-gray-300'
+                  ? 'border-red-400 bg-red-900/20'
+                  : ''
               }`}
               placeholder="Enter your first name"
             />
             {isFieldInvalid('firstName') && (
-              <p className="mt-1 text-sm text-red-600 flex items-center">
+              <p className="mt-1 text-sm text-red-400 flex items-center">
                 <AlertCircle className="h-4 w-4 mr-1" />
                 {getFieldError('firstName')?.message}
               </p>
@@ -248,7 +248,7 @@ export function CandidateProfile({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium luxury-text-secondary mb-2">
               Last Name *
             </label>
             <input
@@ -256,15 +256,15 @@ export function CandidateProfile({
               value={formData.lastName}
               onChange={e => handleInputChange('lastName', e.target.value)}
               onBlur={() => handleBlur('lastName')}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+              className={`luxury-input w-full ${
                 isFieldInvalid('lastName')
-                  ? 'border-red-300 bg-red-50'
-                  : 'border-gray-300'
+                  ? 'border-red-400 bg-red-900/20'
+                  : ''
               }`}
               placeholder="Enter your last name"
             />
             {isFieldInvalid('lastName') && (
-              <p className="mt-1 text-sm text-red-600 flex items-center">
+              <p className="mt-1 text-sm text-red-400 flex items-center">
                 <AlertCircle className="h-4 w-4 mr-1" />
                 {getFieldError('lastName')?.message}
               </p>
@@ -274,13 +274,13 @@ export function CandidateProfile({
 
         {/* Experience Level */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium luxury-text-secondary mb-2">
             Experience Level
           </label>
           <select
             value={formData.experienceLevel}
             onChange={e => handleInputChange('experienceLevel', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="luxury-select w-full"
           >
             <option value="">Select your experience level</option>
             {EXPERIENCE_LEVELS.map(level => (
@@ -299,7 +299,7 @@ export function CandidateProfile({
 
         {/* Skills */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium luxury-text-secondary mb-2">
             Skills
           </label>
 
@@ -308,13 +308,13 @@ export function CandidateProfile({
             {formData.skills.map(skill => (
               <span
                 key={skill}
-                className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800"
+                className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 text-yellow-400 border border-yellow-400/30"
               >
                 {skill}
                 <button
                   type="button"
                   onClick={() => handleRemoveSkill(skill)}
-                  className="ml-2 text-blue-600 hover:text-blue-800"
+                  className="ml-2 text-yellow-400 hover:text-yellow-300"
                 >
                   ×
                 </button>
@@ -334,13 +334,13 @@ export function CandidateProfile({
                   handleAddSkill(newSkill);
                 }
               }}
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="luxury-input flex-1"
               placeholder="Add a skill"
             />
             <button
               type="button"
               onClick={() => handleAddSkill(newSkill)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="luxury-button-primary px-4 py-2"
             >
               Add
             </button>
@@ -348,7 +348,7 @@ export function CandidateProfile({
 
           {/* Common Skills */}
           <div>
-            <p className="text-sm text-gray-600 mb-2">Common skills:</p>
+            <p className="text-sm luxury-text-secondary mb-2">Common skills:</p>
             <div className="flex flex-wrap gap-2">
               {COMMON_SKILLS.filter(
                 skill => !formData.skills.includes(skill)
@@ -357,7 +357,7 @@ export function CandidateProfile({
                   key={skill}
                   type="button"
                   onClick={() => handleAddSkill(skill)}
-                  className="px-3 py-1 text-sm border border-gray-300 rounded-full hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-3 py-1 text-sm border border-yellow-400/30 rounded-full hover:bg-yellow-400/10 luxury-text-secondary hover:luxury-text-gold focus:outline-none focus:ring-2 focus:ring-yellow-400/50 transition-colors"
                 >
                   + {skill}
                 </button>
@@ -367,26 +367,26 @@ export function CandidateProfile({
         </div>
 
         {/* Save Button */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+        <div className="flex items-center justify-between pt-4 border-t border-yellow-400/30">
           <div className="flex items-center space-x-2">
             {saveMessage && (
               <>
                 {saveStatus === 'success' && (
-                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <CheckCircle className="h-4 w-4 text-green-400" />
                 )}
                 {saveStatus === 'error' && (
-                  <AlertCircle className="h-4 w-4 text-red-600" />
+                  <AlertCircle className="h-4 w-4 text-red-400" />
                 )}
                 {saveStatus === 'saving' && (
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-yellow-400"></div>
                 )}
                 <span
                   className={`text-sm ${
                     saveStatus === 'success'
-                      ? 'text-green-600'
+                      ? 'text-green-400'
                       : saveStatus === 'error'
-                        ? 'text-red-600'
-                        : 'text-blue-600'
+                        ? 'text-red-400'
+                        : 'text-yellow-400'
                   }`}
                 >
                   {saveMessage}
@@ -398,7 +398,7 @@ export function CandidateProfile({
           <button
             onClick={handleSave}
             disabled={loading || saveStatus === 'saving'}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="luxury-button-primary flex items-center space-x-2 px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save className="h-4 w-4" />
             <span>

@@ -105,19 +105,19 @@ export function RecruiterProfile({
   const profileCompletion = calculateProfileCompletion();
 
   return (
-    <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-sm border border-gray-200">
-      <div className="px-6 py-4 border-b border-gray-200">
+    <div className="max-w-2xl mx-auto luxury-card">
+      <div className="px-6 py-4 border-b border-yellow-400/30">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <Building className="h-6 w-6 text-blue-600" />
-            <h2 className="text-xl font-semibold text-gray-900">
+            <Building className="h-6 w-6 text-yellow-400" />
+            <h2 className="text-xl font-bold luxury-text-gold">
               Recruiter Profile
             </h2>
           </div>
           <div className="flex items-center space-x-3">
             <div className="text-right">
-              <p className="text-sm text-gray-600">Profile Completion</p>
-              <p className="text-lg font-semibold text-blue-600">
+              <p className="text-sm luxury-text-secondary">Profile Completion</p>
+              <p className="text-lg font-bold luxury-text-gold">
                 {profileCompletion}%
               </p>
             </div>

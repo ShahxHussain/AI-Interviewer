@@ -135,30 +135,24 @@ export default function DashboardPage() {
 
   return (
     <ModernDashboardLayout>
-      <div style={{ 
-        display: 'block',
-        margin: '0',
-        padding: '0',
-        position: 'relative',
-        top: '0'
-      }}>
+      <div className="luxury-container min-h-screen p-6">
         {/* Welcome Section */}
-        <div style={{ marginBottom: '32px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>
+              <h1 className="text-4xl font-bold luxury-text-gold mb-2">
                 Welcome back, {user?.firstName}! 👋
               </h1>
-              <p className="text-lg mt-2" style={{ color: 'var(--text-secondary)' }}>
+              <p className="text-lg luxury-text-secondary">
                 Ready to ace your next interview? Let's continue your journey to success.
               </p>
             </div>
             <div className="hidden md:flex items-center gap-4">
               <button 
                 onClick={handleStartInterview}
-                className="dashboard-button-primary"
+                className="luxury-button-primary flex items-center gap-2"
               >
-                <Play className="w-4 h-4" />
+                <Play className="w-5 h-5" />
                 Start Interview
               </button>
             </div>
@@ -166,31 +160,23 @@ export default function DashboardPage() {
         </div>
 
         {/* Stats Grid */}
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
-          gap: '24px',
-          marginBottom: '32px'
-        }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {stats.map((stat, index) => (
-            <div key={stat.name} className="dashboard-stat-card" style={{ animationDelay: `${index * 0.1}s` }}>
+            <div key={stat.name} className="luxury-card p-6 hover:scale-105 transition-all duration-300" style={{ animationDelay: `${index * 0.1}s` }}>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-sm font-medium luxury-text-secondary">
                     {stat.name}
                   </p>
-                  <p className="text-2xl font-bold mt-1" style={{ color: 'var(--text-primary)' }}>
+                  <p className="text-3xl font-bold mt-1 luxury-text-gold">
                     {stat.value}
                   </p>
-                  <p className="text-sm mt-1" style={{ color: stat.color }}>
+                  <p className="text-sm mt-1 luxury-text-accent">
                     {stat.change}
                   </p>
                 </div>
-                <div 
-                  className="w-12 h-12 rounded-lg flex items-center justify-center"
-                  style={{ backgroundColor: `${stat.color}20` }}
-                >
-                  <stat.icon className="w-6 h-6" style={{ color: stat.color }} />
+                <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-gradient-to-br from-yellow-400/20 to-yellow-600/20 border border-yellow-400/30">
+                  <stat.icon className="w-7 h-7 text-yellow-400" />
                 </div>
               </div>
             </div>
@@ -198,38 +184,35 @@ export default function DashboardPage() {
         </div>
 
         {/* Quick Actions */}
-        <div>
-          <h2 className="text-xl font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold luxury-text-gold mb-6">
             Quick Actions
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {quickActions.map((action, index) => (
               <div 
                 key={action.name}
-                className="dashboard-card p-6 cursor-pointer group"
+                className="luxury-card p-6 cursor-pointer group hover:scale-105 transition-all duration-300"
                 onClick={action.action}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <div className="flex items-center justify-between mb-4">
-                  <div 
-                    className="w-10 h-10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform"
-                    style={{ backgroundColor: `${action.color}20` }}
-                  >
-                    <action.icon className="w-5 h-5" style={{ color: action.color }} />
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br from-yellow-400/20 to-yellow-600/20 border border-yellow-400/30 group-hover:scale-110 transition-transform">
+                    <action.icon className="w-6 h-6 text-yellow-400" />
                   </div>
                   {action.badge && (
-                    <span className="dashboard-badge dashboard-badge-primary">
+                    <span className="px-3 py-1 text-xs font-semibold rounded-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-black">
                       {action.badge}
                     </span>
                   )}
                 </div>
-                <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
+                <h3 className="font-bold mb-2 luxury-text-primary text-lg">
                   {action.name}
                 </h3>
-                <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
+                <p className="text-sm mb-4 luxury-text-secondary">
                   {action.description}
                 </p>
-                <div className="flex items-center text-sm font-medium group-hover:translate-x-1 transition-transform" style={{ color: action.color }}>
+                <div className="flex items-center text-sm font-medium group-hover:translate-x-1 transition-transform luxury-text-gold">
                   Get started
                   <ArrowRight className="w-4 h-4 ml-1" />
                 </div>
@@ -239,40 +222,37 @@ export default function DashboardPage() {
         </div>
 
         {/* Recent Activity & Progress */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Recent Activity */}
-          <div className="dashboard-card p-6">
+          <div className="luxury-card p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>
+              <h2 className="text-xl font-bold luxury-text-gold">
                 Recent Activity
               </h2>
-              <button className="text-sm font-medium" style={{ color: 'var(--primary)' }}>
+              <button className="text-sm font-medium luxury-text-gold hover:underline">
                 View all
               </button>
             </div>
             <div className="space-y-4">
               {recentActivity.map((activity, index) => (
-                <div key={index} className="flex items-start gap-4 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                  <div 
-                    className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-                    style={{ backgroundColor: 'var(--primary)20' }}
-                  >
+                <div key={index} className="flex items-start gap-4 p-4 rounded-xl bg-gradient-to-r from-yellow-400/5 to-yellow-600/5 border border-yellow-400/20 hover:border-yellow-400/40 transition-all duration-300">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 bg-gradient-to-br from-yellow-400/20 to-yellow-600/20 border border-yellow-400/30">
                     {activity.type === 'interview' ? (
-                      <Play className="w-4 h-4" style={{ color: 'var(--primary)' }} />
+                      <Play className="w-5 h-5 text-yellow-400" />
                     ) : (
-                      <User className="w-4 h-4" style={{ color: 'var(--primary)' }} />
+                      <User className="w-5 h-5 text-yellow-400" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium" style={{ color: 'var(--text-primary)' }}>
+                    <p className="font-semibold luxury-text-primary">
                       {activity.title}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
-                      <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                      <p className="text-sm luxury-text-secondary">
                         {activity.time}
                       </p>
                       {activity.score && (
-                        <span className="dashboard-badge dashboard-badge-success">
+                        <span className="px-2 py-1 text-xs font-semibold rounded-full bg-gradient-to-r from-green-400 to-green-600 text-white">
                           Score: {activity.score}
                         </span>
                       )}
@@ -284,85 +264,73 @@ export default function DashboardPage() {
           </div>
 
           {/* Progress Overview */}
-          <div className="dashboard-card p-6">
-            <h2 className="text-xl font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>
+          <div className="luxury-card p-6">
+            <h2 className="text-xl font-bold luxury-text-gold mb-6">
               Your Progress
             </h2>
             <div className="space-y-6">
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
+                  <span className="text-sm font-medium luxury-text-secondary">
                     Interview Skills
                   </span>
-                  <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
+                  <span className="text-sm font-bold luxury-text-gold">
                     85%
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-gray-700 rounded-full h-3">
                   <div 
-                    className="h-2 rounded-full transition-all duration-500"
-                    style={{ 
-                      width: '85%',
-                      background: 'var(--gradient-primary)'
-                    }}
+                    className="h-3 rounded-full transition-all duration-500 bg-gradient-to-r from-yellow-400 to-yellow-600"
+                    style={{ width: '85%' }}
                   ></div>
                 </div>
               </div>
               
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
+                  <span className="text-sm font-medium luxury-text-secondary">
                     Communication
                   </span>
-                  <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
+                  <span className="text-sm font-bold luxury-text-gold">
                     78%
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-gray-700 rounded-full h-3">
                   <div 
-                    className="h-2 rounded-full transition-all duration-500"
-                    style={{ 
-                      width: '78%',
-                      background: 'var(--gradient-success)'
-                    }}
+                    className="h-3 rounded-full transition-all duration-500 bg-gradient-to-r from-green-400 to-green-600"
+                    style={{ width: '78%' }}
                   ></div>
                 </div>
               </div>
               
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
+                  <span className="text-sm font-medium luxury-text-secondary">
                     Technical Knowledge
                   </span>
-                  <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
+                  <span className="text-sm font-bold luxury-text-gold">
                     92%
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-gray-700 rounded-full h-3">
                   <div 
-                    className="h-2 rounded-full transition-all duration-500"
-                    style={{ 
-                      width: '92%',
-                      background: 'var(--gradient-warning)'
-                    }}
+                    className="h-3 rounded-full transition-all duration-500 bg-gradient-to-r from-blue-400 to-blue-600"
+                    style={{ width: '92%' }}
                   ></div>
                 </div>
               </div>
             </div>
             
-            <div className="mt-6 p-4 rounded-lg" style={{ backgroundColor: 'var(--bg-secondary)' }}>
+            <div className="mt-6 p-4 rounded-xl bg-gradient-to-r from-yellow-400/10 to-yellow-600/10 border border-yellow-400/20">
               <div className="flex items-center gap-3">
-                <div 
-                  className="w-8 h-8 rounded-full flex items-center justify-center"
-                  style={{ backgroundColor: 'var(--success)20' }}
-                >
-                  <Zap className="w-4 h-4" style={{ color: 'var(--success)' }} />
+                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-green-400/20 to-green-600/20 border border-green-400/30">
+                  <Zap className="w-5 h-5 text-green-400" />
                 </div>
                 <div>
-                  <p className="font-medium" style={{ color: 'var(--text-primary)' }}>
+                  <p className="font-semibold luxury-text-primary">
                     Keep it up!
                   </p>
-                  <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-sm luxury-text-secondary">
                     You're improving faster than 80% of users
                   </p>
                 </div>
@@ -372,30 +340,30 @@ export default function DashboardPage() {
         </div>
 
         {/* Upcoming Features */}
-        <div className="dashboard-card p-6">
-          <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
+        <div className="luxury-card p-6">
+          <h2 className="text-xl font-bold luxury-text-gold mb-4">
             Coming Soon
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex items-center gap-3 p-3 rounded-lg" style={{ backgroundColor: 'var(--bg-secondary)' }}>
-              <BookOpen className="w-5 h-5" style={{ color: 'var(--primary)' }} />
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-yellow-400/5 to-yellow-600/5 border border-yellow-400/20 hover:border-yellow-400/40 transition-all duration-300">
+              <BookOpen className="w-6 h-6 text-yellow-400" />
               <div>
-                <p className="font-medium" style={{ color: 'var(--text-primary)' }}>Interview Library</p>
-                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Practice with real questions</p>
+                <p className="font-semibold luxury-text-primary">Interview Library</p>
+                <p className="text-sm luxury-text-secondary">Practice with real questions</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 p-3 rounded-lg" style={{ backgroundColor: 'var(--bg-secondary)' }}>
-              <Calendar className="w-5 h-5" style={{ color: 'var(--success)' }} />
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-green-400/5 to-green-600/5 border border-green-400/20 hover:border-green-400/40 transition-all duration-300">
+              <Calendar className="w-6 h-6 text-green-400" />
               <div>
-                <p className="font-medium" style={{ color: 'var(--text-primary)' }}>Mock Interviews</p>
-                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Schedule with experts</p>
+                <p className="font-semibold luxury-text-primary">Mock Interviews</p>
+                <p className="text-sm luxury-text-secondary">Schedule with experts</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 p-3 rounded-lg" style={{ backgroundColor: 'var(--bg-secondary)' }}>
-              <Award className="w-5 h-5" style={{ color: 'var(--accent)' }} />
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-blue-400/5 to-blue-600/5 border border-blue-400/20 hover:border-blue-400/40 transition-all duration-300">
+              <Award className="w-6 h-6 text-blue-400" />
               <div>
-                <p className="font-medium" style={{ color: 'var(--text-primary)' }}>Certifications</p>
-                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Earn skill badges</p>
+                <p className="font-semibold luxury-text-primary">Certifications</p>
+                <p className="text-sm luxury-text-secondary">Earn skill badges</p>
               </div>
             </div>
           </div>

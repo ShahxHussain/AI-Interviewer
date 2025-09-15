@@ -87,6 +87,13 @@ export function useMetricsCollection(options: UseMetricsCollectionOptions = {}) 
       return;
     }
 
+    console.log('useMetricsCollection: Adding facial data:', {
+      eyeContact: data.eyeContact,
+      confidence: data.confidence,
+      emotions: data.emotions,
+      timestamp: data.timestamp
+    });
+    
     metricsCollectionService.addFacialData(data);
   }, []);
 

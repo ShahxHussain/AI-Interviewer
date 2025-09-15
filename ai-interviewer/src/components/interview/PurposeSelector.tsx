@@ -142,10 +142,10 @@ export function PurposeSelector({
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+        <h3 className="text-lg font-bold luxury-text-gold mb-2">
           Interview Purpose
         </h3>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm luxury-text-secondary">
           What type of opportunity are you preparing for?
         </p>
       </div>
@@ -161,33 +161,41 @@ export function PurposeSelector({
             <button
               key={option.purpose}
               onClick={() => onSelect(option.purpose)}
-              className={`relative p-6 rounded-xl border-2 text-left transition-all duration-200 hover:shadow-md ${
+              className={`relative p-6 rounded-xl border-2 text-left transition-all duration-300 hover:scale-105 ${
                 isSelected
-                  ? `${colors.selectedBg} ${colors.selectedBorder} shadow-md`
-                  : `${colors.bg} ${colors.border} hover:${colors.selectedBorder}`
+                  ? 'bg-gradient-to-r from-yellow-400/10 to-yellow-600/10 border-yellow-400/40 shadow-lg shadow-yellow-400/20'
+                  : 'bg-gradient-to-r from-gray-800/50 to-gray-900/50 border-gray-600/30 hover:border-yellow-400/40 hover:bg-gradient-to-r hover:from-yellow-400/5 hover:to-yellow-600/5'
               }`}
             >
               {/* Selection indicator */}
               {isSelected && (
                 <div className="absolute top-4 right-4">
-                  <CheckCircle className="h-6 w-6 text-green-600" />
+                  <CheckCircle className="h-6 w-6 text-yellow-400" />
                 </div>
               )}
 
               {/* Icon and Title */}
               <div className="flex items-center space-x-3 mb-4">
-                <div className={`p-3 rounded-lg ${colors.bg}`}>
+                <div className={`p-3 rounded-lg ${
+                  isSelected 
+                    ? 'bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 border border-yellow-400/30' 
+                    : 'bg-gradient-to-r from-gray-700/50 to-gray-800/50 border border-gray-600/30'
+                }`}>
                   <Icon
-                    className={`h-6 w-6 ${isSelected ? colors.selectedIcon : colors.icon}`}
+                    className={`h-6 w-6 ${
+                      isSelected ? 'text-yellow-400' : 'text-gray-400'
+                    }`}
                   />
                 </div>
                 <div>
-                  <h4 className={`font-semibold text-lg ${colors.text}`}>
+                  <h4 className={`font-bold text-lg ${
+                    isSelected ? 'luxury-text-gold' : 'luxury-text-primary'
+                  }`}>
                     {option.name}
                   </h4>
                   <div className="flex items-center space-x-1 mt-1">
-                    <Clock className="h-3 w-3 text-gray-400" />
-                    <span className="text-xs text-gray-500">
+                    <Clock className="h-3 w-3 luxury-text-secondary" />
+                    <span className="text-xs luxury-text-secondary">
                       {option.duration}
                     </span>
                   </div>
@@ -195,14 +203,14 @@ export function PurposeSelector({
               </div>
 
               {/* Description */}
-              <p className="text-sm text-gray-600 mb-4 leading-relaxed">
+              <p className="text-sm luxury-text-secondary mb-4 leading-relaxed">
                 {option.description}
               </p>
 
               {/* Characteristics */}
               <div className="space-y-4">
                 <div>
-                  <p className="text-xs font-medium text-gray-700 mb-2 flex items-center space-x-1">
+                  <p className="text-xs font-medium luxury-text-primary mb-2 flex items-center space-x-1">
                     <Users className="h-3 w-3" />
                     <span>Key Focus Areas:</span>
                   </p>
@@ -210,41 +218,53 @@ export function PurposeSelector({
                     {option.characteristics.map((char, index) => (
                       <div key={index} className="flex items-center space-x-2">
                         <div
-                          className={`w-1.5 h-1.5 rounded-full ${colors.accent.replace('text-', 'bg-')}`}
+                          className={`w-1.5 h-1.5 rounded-full ${
+                            isSelected ? 'bg-yellow-400' : 'bg-gray-400'
+                          }`}
                         ></div>
-                        <span className="text-xs text-gray-600">{char}</span>
+                        <span className="text-xs luxury-text-secondary">{char}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 <div
-                  className={`p-3 rounded-lg ${colors.bg} border ${colors.border}`}
+                  className={`p-3 rounded-lg ${
+                    isSelected 
+                      ? 'bg-gradient-to-r from-yellow-400/10 to-yellow-600/10 border border-yellow-400/30' 
+                      : 'bg-gradient-to-r from-gray-700/30 to-gray-800/30 border border-gray-600/30'
+                  }`}
                 >
-                  <p className="text-xs font-medium text-gray-700 mb-2">
+                  <p className="text-xs font-medium luxury-text-primary mb-2">
                     Expectations:
                   </p>
                   <div className="grid grid-cols-1 gap-1">
                     {option.expectations.map((exp, index) => (
                       <div key={index} className="flex items-center space-x-2">
                         <div
-                          className={`w-1 h-1 rounded-full ${colors.accent.replace('text-', 'bg-')}`}
+                          className={`w-1 h-1 rounded-full ${
+                            isSelected ? 'bg-yellow-400' : 'bg-gray-400'
+                          }`}
                         ></div>
-                        <span className="text-xs text-gray-600">{exp}</span>
+                        <span className="text-xs luxury-text-secondary">{exp}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-gray-700 mb-2">
+                  <p className="text-xs font-medium luxury-text-primary mb-2">
                     Common Question Types:
                   </p>
                   <div className="flex flex-wrap gap-1">
                     {option.commonQuestions.map((question, index) => (
                       <span
                         key={index}
-                        className={`px-2 py-1 text-xs font-medium rounded-full ${colors.badge}`}
+                        className={`px-2 py-1 text-xs font-medium rounded-full ${
+                          isSelected
+                            ? 'bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 text-yellow-400 border border-yellow-400/30'
+                            : 'bg-gradient-to-r from-gray-700/30 to-gray-800/30 text-gray-300 border border-gray-600/30'
+                        }`}
                       >
                         {question}
                       </span>

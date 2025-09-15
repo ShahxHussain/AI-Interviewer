@@ -57,20 +57,20 @@ export function InterviewSelection({
   const isComplete = selectedInterviewer && selectedType;
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto luxury-container p-6">
       {/* Progress Indicator */}
       <div className="mb-8">
         <div className="flex items-center justify-center space-x-4">
           <div
             className={`flex items-center space-x-2 ${
-              step === 'interviewer' ? 'text-blue-600' : 'text-green-600'
+              step === 'interviewer' ? 'luxury-text-gold' : 'text-green-400'
             }`}
           >
             <div
               className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                 step === 'interviewer'
-                  ? 'bg-blue-100 text-blue-600'
-                  : 'bg-green-100 text-green-600'
+                  ? 'bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 text-yellow-400 border border-yellow-400/30'
+                  : 'bg-gradient-to-r from-green-400/20 to-green-600/20 text-green-400 border border-green-400/30'
               }`}
             >
               1
@@ -78,20 +78,20 @@ export function InterviewSelection({
             <span className="font-medium">Choose Interviewer</span>
           </div>
 
-          <div className="w-8 h-px bg-gray-300"></div>
+          <div className="w-8 h-px bg-gradient-to-r from-yellow-400/30 to-yellow-600/30"></div>
 
           <div
             className={`flex items-center space-x-2 ${
-              step === 'type' ? 'text-blue-600' : 'text-gray-400'
+              step === 'type' ? 'luxury-text-gold' : 'luxury-text-secondary'
             }`}
           >
             <div
               className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                 step === 'type'
-                  ? 'bg-blue-100 text-blue-600'
+                  ? 'bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 text-yellow-400 border border-yellow-400/30'
                   : selectedType
-                    ? 'bg-green-100 text-green-600'
-                    : 'bg-gray-100 text-gray-400'
+                    ? 'bg-gradient-to-r from-green-400/20 to-green-600/20 text-green-400 border border-green-400/30'
+                    : 'bg-gray-600 text-gray-400'
               }`}
             >
               2
@@ -102,7 +102,7 @@ export function InterviewSelection({
       </div>
 
       {/* Content */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+      <div className="luxury-card p-8">
         {step === 'interviewer' ? (
           <InterviewerSelection
             selectedInterviewer={selectedInterviewer}
@@ -116,35 +116,34 @@ export function InterviewSelection({
         )}
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-200">
-          <Button
-            variant="outline"
+        <div className="flex items-center justify-between mt-8 pt-6 border-t border-yellow-400/30">
+          <button
             onClick={handleBack}
-            className="flex items-center space-x-2"
+            className="luxury-button-secondary flex items-center space-x-2"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Back</span>
-          </Button>
+          </button>
 
           <div className="flex items-center space-x-3">
             {step === 'interviewer' ? (
-              <Button
+              <button
                 onClick={handleNext}
                 disabled={!canProceed}
-                className="flex items-center space-x-2"
+                className="luxury-button-primary flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span>Next</span>
                 <ArrowRight className="h-4 w-4" />
-              </Button>
+              </button>
             ) : (
-              <Button
+              <button
                 onClick={handleComplete}
                 disabled={!isComplete}
-                className="flex items-center space-x-2"
+                className="luxury-button-primary flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span>Continue to Customization</span>
                 <ArrowRight className="h-4 w-4" />
-              </Button>
+              </button>
             )}
           </div>
         </div>
@@ -152,15 +151,15 @@ export function InterviewSelection({
 
       {/* Selection Summary */}
       {(selectedInterviewer || selectedType) && (
-        <div className="mt-6 bg-gray-50 rounded-lg p-4">
-          <h4 className="text-sm font-medium text-gray-900 mb-2">
+        <div className="mt-6 rounded-xl p-4 bg-gradient-to-r from-yellow-400/5 to-yellow-600/5 border border-yellow-400/20">
+          <h4 className="text-sm font-bold luxury-text-gold mb-2">
             Current Selection:
           </h4>
-          <div className="flex items-center space-x-4 text-sm text-gray-600">
+          <div className="flex items-center space-x-4 text-sm luxury-text-secondary">
             {selectedInterviewer && (
               <div className="flex items-center space-x-2">
                 <span className="font-medium">Interviewer:</span>
-                <span className="capitalize">
+                <span className="capitalize px-2 py-1 rounded-full bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 text-yellow-400 border border-yellow-400/30">
                   {selectedInterviewer.replace('-', ' ')}
                 </span>
               </div>
@@ -168,7 +167,7 @@ export function InterviewSelection({
             {selectedType && (
               <div className="flex items-center space-x-2">
                 <span className="font-medium">Type:</span>
-                <span className="capitalize">
+                <span className="capitalize px-2 py-1 rounded-full bg-gradient-to-r from-green-400/20 to-green-600/20 text-green-400 border border-green-400/30">
                   {selectedType.replace('-', ' ')}
                 </span>
               </div>

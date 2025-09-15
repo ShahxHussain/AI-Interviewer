@@ -97,36 +97,30 @@ export function ProfileCompletionCard({ user }: ProfileCompletionCardProps) {
   };
 
   return (
-    <div className={`rounded-lg border p-4 ${getCompletionBgColor()}`}>
+    <div className="luxury-card p-4">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
-          <Award className={`h-6 w-6 ${getCompletionColor()}`} />
+          <Award className="h-6 w-6 text-yellow-400" />
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 className="text-lg font-bold luxury-text-gold">
               Profile Completion
             </h3>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm luxury-text-secondary">
               {completed} of {total} sections completed
             </p>
           </div>
         </div>
         <div className="text-right">
-          <div className={`text-2xl font-bold ${getCompletionColor()}`}>
+          <div className="text-2xl font-bold luxury-text-gold">
             {percentage}%
           </div>
         </div>
       </div>
 
       {/* Progress Bar */}
-      <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
+      <div className="w-full bg-gray-700 rounded-full h-3 mb-4">
         <div
-          className={`h-2 rounded-full transition-all duration-300 ${
-            percentage >= 80
-              ? 'bg-green-600'
-              : percentage >= 60
-                ? 'bg-yellow-600'
-                : 'bg-red-600'
-          }`}
+          className="h-3 rounded-full transition-all duration-300 bg-gradient-to-r from-yellow-400 to-yellow-600"
           style={{ width: `${percentage}%` }}
         ></div>
       </div>
@@ -136,13 +130,13 @@ export function ProfileCompletionCard({ user }: ProfileCompletionCardProps) {
         {checks.map(check => (
           <div key={check.key} className="flex items-center space-x-2">
             {check.value ? (
-              <CheckCircle className="h-4 w-4 text-green-600" />
+              <CheckCircle className="h-4 w-4 text-green-400" />
             ) : (
               <AlertCircle className="h-4 w-4 text-gray-400" />
             )}
             <span
               className={`text-sm ${
-                check.value ? 'text-green-700' : 'text-gray-600'
+                check.value ? 'luxury-text-primary' : 'luxury-text-secondary'
               }`}
             >
               {check.label}
@@ -153,11 +147,11 @@ export function ProfileCompletionCard({ user }: ProfileCompletionCardProps) {
 
       {/* Completion Tips */}
       {percentage < 100 && (
-        <div className="mt-4 p-3 bg-white rounded-md border border-gray-200">
-          <h4 className="text-sm font-medium text-gray-900 mb-2">
+        <div className="mt-4 p-3 rounded-xl bg-gradient-to-r from-yellow-400/5 to-yellow-600/5 border border-yellow-400/20">
+          <h4 className="text-sm font-bold luxury-text-gold mb-2">
             Complete your profile to:
           </h4>
-          <ul className="text-sm text-gray-600 space-y-1">
+          <ul className="text-sm luxury-text-secondary space-y-1">
             {user.role === 'candidate' ? (
               <>
                 <li>• Get more personalized interview questions</li>

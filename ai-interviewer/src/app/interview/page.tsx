@@ -133,12 +133,12 @@ export default function InterviewPage() {
         );
       case 'ready':
         return (
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+          <div className="max-w-4xl mx-auto text-center luxury-container p-6">
+            <div className="luxury-card p-8">
               <div className="mb-6">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-yellow-400/30">
                   <svg
-                    className="w-8 h-8 text-green-600"
+                    className="w-8 h-8 text-yellow-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -151,59 +151,59 @@ export default function InterviewPage() {
                     />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                <h2 className="text-2xl font-bold luxury-text-gold mb-2">
                   Ready to Start!
                 </h2>
-                <p className="text-gray-600">
+                <p className="luxury-text-secondary">
                   Your interview has been configured. Review your settings below
                   and start when ready.
                 </p>
               </div>
 
               {/* Configuration Summary */}
-              <div className="bg-gray-50 rounded-lg p-6 mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="rounded-xl p-6 mb-6 bg-gradient-to-r from-yellow-400/5 to-yellow-600/5 border border-yellow-400/20">
+                <h3 className="text-lg font-bold luxury-text-gold mb-4">
                   Interview Configuration
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="font-medium text-gray-700">
+                      <span className="font-medium luxury-text-primary">
                         Interviewer:
                       </span>
-                      <span className="capitalize">
+                      <span className="capitalize px-2 py-1 rounded-full bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 text-yellow-400 border border-yellow-400/30">
                         {selectedInterviewer?.replace('-', ' ')}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="font-medium text-gray-700">Type:</span>
-                      <span className="capitalize">
+                      <span className="font-medium luxury-text-primary">Type:</span>
+                      <span className="capitalize px-2 py-1 rounded-full bg-gradient-to-r from-green-400/20 to-green-600/20 text-green-400 border border-green-400/30">
                         {selectedType?.replace('-', ' ')}
                       </span>
                     </div>
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="font-medium text-gray-700">
+                      <span className="font-medium luxury-text-primary">
                         Difficulty:
                       </span>
-                      <span className="capitalize">
+                      <span className="capitalize px-2 py-1 rounded-full bg-gradient-to-r from-blue-400/20 to-blue-600/20 text-blue-400 border border-blue-400/30">
                         {interviewSettings?.difficulty}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="font-medium text-gray-700">Focus:</span>
-                      <span className="capitalize">
+                      <span className="font-medium luxury-text-primary">Focus:</span>
+                      <span className="capitalize px-2 py-1 rounded-full bg-gradient-to-r from-purple-400/20 to-purple-600/20 text-purple-400 border border-purple-400/30">
                         {interviewSettings?.topicFocus === 'dsa'
                           ? 'DSA'
                           : interviewSettings?.topicFocus}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="font-medium text-gray-700">
+                      <span className="font-medium luxury-text-primary">
                         Purpose:
                       </span>
-                      <span className="capitalize">
+                      <span className="capitalize px-2 py-1 rounded-full bg-gradient-to-r from-orange-400/20 to-orange-600/20 text-orange-400 border border-orange-400/30">
                         {interviewSettings?.purpose}
                       </span>
                     </div>
@@ -215,13 +215,13 @@ export default function InterviewPage() {
               <div className="flex items-center justify-center space-x-4">
                 <button
                   onClick={handleBackToCustomization}
-                  className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="luxury-button-secondary px-6 py-2"
                 >
                   Modify Settings
                 </button>
                 <button
                   onClick={handleStartInterview}
-                  className="px-8 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                  className="luxury-button-primary px-8 py-2 font-medium"
                 >
                   Start Interview
                 </button>

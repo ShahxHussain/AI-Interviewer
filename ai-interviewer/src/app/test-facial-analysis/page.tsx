@@ -1,161 +1,238 @@
 'use client';
 
-import React from 'react';
-import { VideoRecorder } from '@/components/interview/VideoRecorder';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Camera, Brain, Eye, Smile } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Button } from '@/components/ui/Button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { useFacialAnalysis } from '@/hooks/useFacialAnalysis';
 
 export default function TestFacialAnalysisPage() {
+  const [isCameraOn, setIsCameraOn] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [stream, setStream] = useState<MediaStream | null>(null);
+
+  const {
+    isInitialized,
+    isAnalyzing,
+    isLoading,
+    error,
+    initialize,
+    startAnalysis,
+    stopAnalysis,
+    currentAnalysis,
+    metrics,
+  } = useFacialAnalysis({
+    analysisInterval: 1000,
+    autoStart: false,
+    onError: (error) => {
+      console.error('Facial analysis error:', error);
+    },
+  });
+
+  const startCamera = async () => {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: false,
+      });
+      
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream;
+        videoRef.current.play();
+      }
+      
+      setStream(mediaStream);
+      setIsCameraOn(true);
+    } catch (error) {
+      console.error('Camera error:', error);
+    }
+  };
+
+  const stopCamera = () => {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      setStream(null);
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+    setIsCameraOn(false);
+  };
+
+  const handleStartAnalysis = async () => {
+    if (videoRef.current) {
+      await startAnalysis(videoRef.current);
+    }
+  };
+
+  const handleStopAnalysis = () => {
+    stopAnalysis();
+  };
+
+  useEffect(() => {
+    if (!isInitialized && !isLoading && !error) {
+      console.log('Initializing facial analysis...');
+      initialize();
+    }
+  }, [isInitialized, isLoading, error, initialize]);
+
   return (
-    <div className="min-h-screen bg-gray-50 py-4">
-      <div className="max-w-7xl mx-auto px-4">
-        {/* Compact Header */}
-        <div className="mb-4">
-          <h1 className="text-2xl font-bold text-gray-900 mb-1 flex items-center gap-2">
-            <Brain className="h-6 w-6 text-blue-600" />
-            Facial Analysis Test
-          </h1>
-          <p className="text-sm text-gray-600">
-            Real-time emotion detection, eye contact tracking, and mood analysis
-          </p>
-        </div>
-
-        {/* Main Content - Single Row Layout */}
-        <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 h-[calc(100vh-140px)]">
-          {/* Video Recorder - Takes up 2 columns */}
-          <div className="xl:col-span-2">
-            <VideoRecorder
-              onRecordingComplete={videoBlob => {
-                console.log('Video recording completed:', videoBlob);
-                alert(
-                  `Video recorded successfully! Size: ${(videoBlob.size / 1024 / 1024).toFixed(2)} MB`
-                );
-              }}
-              onError={error => {
-                console.error('Video recording error:', error);
-                alert(`Video recording error: ${error}`);
-              }}
-              maxDuration={120} // 2 minutes for testing
-              enableFacialAnalysis={true}
-              showQuickTest={true} // Enable 20-second quick test
-            />
-          </div>
-
-          {/* Right Sidebar - Compact Instructions */}
-          <div className="xl:col-span-2 space-y-3 overflow-y-auto max-h-full">
-            {/* Quick Features Overview */}
-            <Card className="p-3 bg-blue-50">
-              <h3 className="font-semibold mb-2 text-blue-900 flex items-center gap-2 text-sm">
-                <Brain className="h-4 w-4" />
-                AI Features
-              </h3>
-
-              <div className="grid grid-cols-1 gap-2 text-xs">
-                <div className="flex items-center gap-2">
-                  <Eye className="h-3 w-3 text-blue-600" />
-                  <span className="font-medium">Eye Contact Tracking</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Smile className="h-3 w-3 text-green-600" />
-                  <span className="font-medium">Emotion Detection</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Camera className="h-3 w-3 text-purple-600" />
-                  <span className="font-medium">Head Pose Estimation</span>
+    <div className="min-h-screen bg-gray-900 p-8">
+      <div className="max-w-4xl mx-auto space-y-6">
+        <Card className="bg-gray-800 border-gray-700">
+          <CardHeader>
+            <CardTitle className="text-white">Facial Analysis Test</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Status */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              <div className="bg-gray-700 p-3 rounded">
+                <div className="text-gray-300">Initialized</div>
+                <div className={`font-bold ${isInitialized ? 'text-green-400' : 'text-red-400'}`}>
+                  {isInitialized ? 'YES' : 'NO'}
                 </div>
               </div>
-            </Card>
-
-            {/* Quick Test Options */}
-            <Card className="p-3 bg-orange-50">
-              <h3 className="font-semibold mb-2 text-sm text-orange-900">
-                Quick Test
-              </h3>
-              <div className="space-y-2">
-                <p className="text-xs text-orange-700">
-                  Try the 20-second analysis test for quick results
-                </p>
-                <div className="text-xs text-orange-600">
-                  <p>• Automatic recording for 20 seconds</p>
-                  <p>• Instant analysis summary</p>
-                  <p>• Perfect for quick testing</p>
+              <div className="bg-gray-700 p-3 rounded">
+                <div className="text-gray-300">Loading</div>
+                <div className={`font-bold ${isLoading ? 'text-yellow-400' : 'text-gray-400'}`}>
+                  {isLoading ? 'YES' : 'NO'}
                 </div>
               </div>
-            </Card>
-
-            {/* Quick Instructions */}
-            <Card className="p-3">
-              <h3 className="font-semibold mb-2 text-sm">Quick Start</h3>
-              <div className="space-y-1 text-xs text-gray-600">
-                <p>1. Allow camera permissions</p>
-                <p>
-                  2. Click &quot;Start Recording&quot; or &quot;20s Test&quot;
-                </p>
-                <p>3. Look at camera & try different expressions</p>
-                <p>4. Watch real-time analysis below</p>
+              <div className="bg-gray-700 p-3 rounded">
+                <div className="text-gray-300">Analyzing</div>
+                <div className={`font-bold ${isAnalyzing ? 'text-green-400' : 'text-red-400'}`}>
+                  {isAnalyzing ? 'YES' : 'NO'}
+                </div>
               </div>
-            </Card>
+              <div className="bg-gray-700 p-3 rounded">
+                <div className="text-gray-300">Error</div>
+                <div className={`font-bold ${error ? 'text-red-400' : 'text-gray-400'}`}>
+                  {error ? 'YES' : 'NO'}
+                </div>
+              </div>
+            </div>
 
-            {/* Emotions to Test - Compact Grid */}
-            <Card className="p-3">
-              <h3 className="font-semibold mb-2 text-sm">Test Emotions</h3>
-              <div className="grid grid-cols-3 gap-1">
-                {[
-                  { name: 'Happy', emoji: '😊' },
-                  { name: 'Neutral', emoji: '😐' },
-                  { name: 'Surprised', emoji: '😮' },
-                  { name: 'Sad', emoji: '😢' },
-                  { name: 'Angry', emoji: '😠' },
-                  { name: 'Fearful', emoji: '😨' },
-                ].map(emotion => (
-                  <div
-                    key={emotion.name}
-                    className="text-center p-2 bg-gray-50 rounded text-xs hover:bg-gray-100 transition-colors"
-                  >
-                    <div className="text-lg mb-1">{emotion.emoji}</div>
-                    <div className="font-medium">{emotion.name}</div>
+            {/* Error Display */}
+            {error && (
+              <div className="bg-red-900 border border-red-700 p-4 rounded text-red-200">
+                <strong>Error:</strong> {error}
+              </div>
+            )}
+
+            {/* Controls */}
+            <div className="flex gap-4">
+              <Button
+                onClick={isCameraOn ? stopCamera : startCamera}
+                className={isCameraOn ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'}
+              >
+                {isCameraOn ? 'Stop Camera' : 'Start Camera'}
+              </Button>
+              
+              <Button
+                onClick={isAnalyzing ? handleStopAnalysis : handleStartAnalysis}
+                disabled={!isCameraOn || !isInitialized}
+                className={isAnalyzing ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}
+              >
+                {isAnalyzing ? 'Stop Analysis' : 'Start Analysis'}
+              </Button>
+            </div>
+
+            {/* Video */}
+            <div className="relative">
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className="w-full max-w-md mx-auto bg-gray-800 rounded"
+                style={{ transform: 'scaleX(-1)' }}
+              />
+              {isCameraOn && (
+                <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded text-xs">
+                  LIVE
+                </div>
+              )}
+            </div>
+
+            {/* Current Analysis */}
+            {currentAnalysis && (
+              <Card className="bg-gray-700 border-gray-600">
+                <CardHeader>
+                  <CardTitle className="text-white text-lg">Current Analysis</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <div className="text-gray-300">Eye Contact</div>
+                      <div className={`font-bold ${currentAnalysis.eyeContact ? 'text-green-400' : 'text-red-400'}`}>
+                        {currentAnalysis.eyeContact ? 'YES' : 'NO'}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-gray-300">Confidence</div>
+                      <div className="text-white font-bold">
+                        {(currentAnalysis.confidence * 100).toFixed(1)}%
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-gray-300">Emotions</div>
+                      <div className="text-white text-xs">
+                        {Object.entries(currentAnalysis.emotions)
+                          .filter(([_, value]) => value > 0.1)
+                          .map(([emotion, value]) => `${emotion}: ${(value * 100).toFixed(1)}%`)
+                          .join(', ')}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-gray-300">Head Pose</div>
+                      <div className="text-white text-xs">
+                        P: {currentAnalysis.headPose.pitch.toFixed(2)}<br/>
+                        Y: {currentAnalysis.headPose.yaw.toFixed(2)}<br/>
+                        R: {currentAnalysis.headPose.roll.toFixed(2)}
+                      </div>
+                    </div>
                   </div>
-                ))}
-              </div>
-            </Card>
+                </CardContent>
+              </Card>
+            )}
 
-            {/* Technical Info - Compact */}
-            <Card className="p-3 bg-gray-50">
-              <h3 className="font-semibold mb-2 text-sm">Technical Info</h3>
-              <div className="space-y-1 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Frequency:</span>
-                  <span className="font-medium">1 Hz</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Detection:</span>
-                  <span className="font-medium">TinyFaceDetector</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Emotions:</span>
-                  <span className="font-medium">7 types</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Landmarks:</span>
-                  <span className="font-medium">68 points</span>
-                </div>
-              </div>
-            </Card>
-
-            {/* Status Indicator */}
-            <Card className="p-3 bg-green-50">
-              <h3 className="font-semibold mb-2 text-sm text-green-900">
-                Status
-              </h3>
-              <div className="text-xs text-green-700">
-                <p>✓ Face-api.js models loaded</p>
-                <p>✓ Real-time analysis ready</p>
-                <p>✓ Camera detection active</p>
-              </div>
-            </Card>
-          </div>
-        </div>
+            {/* Metrics */}
+            {metrics.totalAnalysisTime > 0 && (
+              <Card className="bg-gray-700 border-gray-600">
+                <CardHeader>
+                  <CardTitle className="text-white text-lg">Metrics</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <div className="text-gray-300">Eye Contact %</div>
+                      <div className="text-white font-bold">
+                        {metrics.eyeContactPercentage.toFixed(1)}%
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-gray-300">Avg Confidence</div>
+                      <div className="text-white font-bold">
+                        {(metrics.averageConfidence * 100).toFixed(1)}%
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-gray-300">Dominant Emotion</div>
+                      <div className="text-white font-bold capitalize">
+                        {metrics.dominantEmotion}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-gray-300">Analysis Time</div>
+                      <div className="text-white font-bold">
+                        {(metrics.totalAnalysisTime / 1000).toFixed(1)}s
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
