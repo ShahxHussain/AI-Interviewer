@@ -27,30 +27,13 @@ The Solution
 
 ## 🏗️ System Architecture
 
-### Frontend Stack
-- **Next.js 15** with App Router for modern React development
-- **React 19** with TypeScript for type-safe component development
-- **Tailwind CSS** for responsive, utility-first styling
-- **Radix UI** for accessible, unstyled UI components
-- **Lucide React** for consistent iconography
+| **Layer**          | **Technologies** |
+|--------------------|-----------------|
+| **Frontend**       | Next.js 15 (App Router), React 19 (TypeScript), Tailwind CSS, Radix UI, Lucide React |
+| **Backend**        | Next.js API Routes, MongoDB + Mongoose, JWT Auth (bcryptjs), RESTful APIs |
+| **AI/ML**          | Together.ai (Llama 3.3-70B), Murf AI (TTS), Face-api.js, TensorFlow.js |
+| **Database Schema**| Users (RBAC), Interview Sessions, Job Postings, Analytics |
 
-### Backend Stack
-- **Next.js API Routes** for serverless backend functionality
-- **MongoDB** with Mongoose ODM for data persistence
-- **JWT Authentication** with bcryptjs for secure user management
-- **RESTful API** design for scalable data operations
-
-### AI/ML Integration
-- **Together.ai** with Llama 3.3-70B for intelligent question generation
-- **Murf AI** for high-quality voice synthesis and text-to-speech
-- **Face-api.js** for real-time facial analysis and emotion detection
-- **TensorFlow.js** for machine learning model execution
-
-### Database Schema
-- **User Management**: Role-based authentication (candidates/recruiters)
-- **Interview Sessions**: Comprehensive session tracking with metrics
-- **Job Postings**: Full job management with application tracking
-- **Analytics**: Performance data and user insights
 
 ##  Core Features
 
@@ -313,100 +296,6 @@ Kiro's specs system ensured every feature was perfectly implemented:
 
 **Kiro's Role**: Each requirement was translated into production-ready code through intelligent automation.
 
-### **2. Implementation Roadmap**
-
-Kiro's 15-phase implementation plan provided clear direction:
-
-#### **Phase 1: Project Setup** ✅
-**Kiro's Contribution**: 
-- Generated complete Next.js 15 project structure
-- Configured TypeScript, Tailwind CSS, and Radix UI
-- Set up ESLint, Prettier, and development tools
-- Created environment configuration templates
-
-**Time Saved**: Days of work → Minutes
-
-#### **Phase 2: Authentication System** ✅
-**Kiro's Contribution**:
-- Generated JWT-based authentication system
-- Created user registration forms for both roles
-- Implemented role-based access control
-- Built profile management components
-
-**Time Saved**: Days of work → Minutes
-
-#### **Phase 3: Core UI Components** ✅
-**Kiro's Contribution**:
-- Generated responsive dashboard layout
-- Created interview selection components
-- Built customization panel with all options
-- Implemented role-based navigation
-
-**Time Saved**: Days of work → Minutes
-
-#### **Phase 4: Resume Processing** ✅
-**Kiro's Contribution**:
-- Generated file upload component with drag-and-drop
-- Integrated Together.ai for resume parsing
-- Created skills and experience extraction
-- Implemented fallback mechanisms
-
-**Time Saved**: Days of work → Minutes
-
-#### **Phase 5: Question Generation** ✅
-**Kiro's Contribution**:
-- Integrated Together.ai for personalized questions
-- Implemented difficulty scaling and topic filtering
-- Created interview session state management
-- Built session recovery functionality
-
-**Time Saved**: Days of work → Minutes
-
-#### **Phase 6: Voice Synthesis** ✅
-**Kiro's Contribution**:
-- Integrated Murf AI for voice synthesis
-- Created voice profile selection system
-- Implemented audio recording functionality
-- Built Web Speech API fallback
-
-**Time Saved**: Days of work → Minutes
-
-#### **Phase 7: Facial Analysis** ✅
-**Kiro's Contribution**:
-- Integrated Face-api.js with TensorFlow.js
-- Implemented real-time emotion detection
-- Created eye contact percentage calculation
-- Built metrics collection system
-
-**Time Saved**: Days of work → Minutes
-
-#### **Phase 8: Interview Session** ✅
-**Kiro's Contribution**:
-- Generated main interview interface
-- Created AI-powered answer assessment
-- Implemented comprehensive feedback generation
-- Built improvement suggestion system
-
-**Time Saved**: Days of work → Minutes
-
-#### **Phase 9: Session History** ✅
-**Kiro's Contribution**:
-- Generated interview history dashboard
-- Created session replay functionality
-- Implemented performance trend visualization
-- Built data retention management
-
-**Time Saved**: Days of work → Minutes
-
-#### **Phase 10: Recruiter Dashboard** ✅
-**Kiro's Contribution**:
-- Generated job posting creation interface
-- Created job management system
-- Implemented candidate application tracking
-- Built analytics and reporting
-
-**Time Saved**: Days of work → Minutes
-
 ---
 
 ## ⚡ Kiro Hooks: Intelligent Automation
@@ -568,7 +457,7 @@ The most revolutionary aspect of this project is that **every single feature** w
 ## 📊 Kiro's Development Impact
 
 ### **Code Generation Statistics**
-- **Total Lines Generated**: 15,000+ lines of production-ready code
+- **Total Lines Generated**: 25,000+ lines of production-ready code
 - **Zero Manual Coding**: Every feature generated through Kiro
 - **Type Safety**: 100% TypeScript coverage with generated interfaces
 - **Error Handling**: Comprehensive error boundaries and fallbacks
@@ -774,7 +663,7 @@ This project proves that **agentic development** is not just a concept—it's a 
 ### Installation
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/ShahxHussain/AI-Interviewer-and-Recruitment-Platform.git
 cd ai-interviewer
 
 # Install dependencies
@@ -799,7 +688,6 @@ MURF_AI_API_KEY=your_murf_ai_key
 
 # Authentication
 JWT_SECRET=your_jwt_secret
-NEXTAUTH_SECRET=your_nextauth_secret
 ```
 
 ### Available Scripts
