@@ -77,45 +77,43 @@ npm run dev
 5. **Open your browser**
    Navigate to [http://localhost:3000](http://localhost:3000)
 
-## 🌐 Deployment Options
+## 🌐 Quick Deployment (FREE!)
 
-### Option 1: Vercel (Recommended)
+### 🚀 One-Click Deploy to Vercel
 
-Vercel is the easiest and most optimized platform for Next.js applications.
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yourusername/ai-interviewer)
 
-#### Steps:
-1. **Push to GitHub**
-   ```bash
-   git add .
-   git commit -m "Initial commit"
-   git push origin main
-   ```
+**Steps:**
+1. Click the "Deploy with Vercel" button above
+2. Connect your GitHub account
+3. Add environment variables (see below)
+4. Click "Deploy" - Done! 🎉
 
-2. **Deploy to Vercel**
-   - Go to [vercel.com](https://vercel.com)
-   - Sign in with GitHub
-   - Click "New Project"
-   - Import your repository
-   - Add environment variables in Vercel dashboard
-   - Click "Deploy"
+### 📋 Required Environment Variables
 
-3. **Environment Variables in Vercel**
-   ```
-   MONGODB_URI=your_mongodb_connection_string
-   TOGETHER_AI_API_KEY=your_together_ai_key
-   MURF_AI_API_KEY=your_murf_ai_key
-   JWT_SECRET=your_jwt_secret
-   NEXTAUTH_SECRET=your_nextauth_secret
-   NEXTAUTH_URL=https://your-app.vercel.app
-   ```
+```env
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/ai-interviewer
+TOGETHER_AI_API_KEY=your_together_ai_key
+MURF_AI_API_KEY=your_murf_ai_key
+JWT_SECRET=your_super_secret_jwt_key
+NEXTAUTH_SECRET=your_nextauth_secret
+NEXTAUTH_URL=https://your-app.vercel.app
+```
 
-#### Vercel Advantages:
-- ✅ Zero-config deployment
-- ✅ Automatic HTTPS
-- ✅ Global CDN
-- ✅ Serverless functions
-- ✅ Automatic scaling
-- ✅ Free tier available
+### 🆓 Free Deployment Options
+
+| Platform | Free Tier | Best For | Deploy Time |
+|----------|-----------|----------|-------------|
+| **Vercel** ⭐ | 100GB bandwidth | Next.js apps | 2 minutes |
+| **Netlify** | 100GB bandwidth | Static sites | 3 minutes |
+| **Railway** | $5 credit/month | Full-stack | 5 minutes |
+| **Render** | 750 hours/month | Production | 4 minutes |
+| **DigitalOcean** | $100 credit | Scaling | 6 minutes |
+
+### 📖 Detailed Deployment Guide
+
+For comprehensive deployment instructions with step-by-step guides for all platforms, see:
+**[📚 DEPLOYMENT_README.md](./DEPLOYMENT_README.md)**
 
 ### Option 2: Netlify
 

@@ -542,7 +542,7 @@ interface JobPosting {
 ### Installation
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone 
 cd ai-interviewer
 
 # Install dependencies

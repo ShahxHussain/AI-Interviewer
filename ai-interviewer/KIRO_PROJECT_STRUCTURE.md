@@ -200,38 +200,6 @@ The tasks document provides a **15-phase implementation roadmap** with detailed 
 ⚠️ **Status:** Incomplete  
 📌 **Reason:** Free credits were used up, and I only had one debit card which I was unable to use for purchasing additional credits after **September 1st**, leaving these phases unfinished.
 
-### **3. Design Document** (`specs/ai-interviewer/design.md`)
-
-The design document provides **comprehensive technical architecture**:
-
-#### **High-Level Architecture**
-```mermaid
-graph TB
-    subgraph "Frontend Layer"
-        A[Next.js App Router]
-        B[React Components]
-        C[Tailwind CSS + Radix UI]
-        D[TensorFlow.js + face-api.js]
-    end
-    
-    subgraph "API Layer"
-        E[Next.js API Routes]
-        F[Authentication Middleware]
-        G[File Upload Handler]
-    end
-    
-    subgraph "External Services"
-        H[Together.ai - NLP]
-        I[Murf AI - Voice Synthesis]
-        J[Database - User Data]
-    end
-    
-    subgraph "Client-Side Processing"
-        K[Face Analysis]
-        L[Audio Recording]
-        M[Real-time Metrics]
-    end
-```
 
 #### **Technology Stack**
 - **Frontend**: Next.js 14+, React 18+, TypeScript, Tailwind CSS, Radix UI
